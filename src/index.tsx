@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { PlayerProvider } from 'services/player';
 import App from './App';
 
 const queryClient: QueryClient  = new QueryClient();
@@ -13,7 +14,9 @@ ReactDOM.render(
     <ChakraProvider>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <PlayerProvider>
+            <App />
+          </PlayerProvider>
         </QueryClientProvider>
       </BrowserRouter>
     </ChakraProvider>

@@ -5,11 +5,7 @@ function SearchPage() {
     console.log('Search page loaded');
   }, []);
 
-  return (
-    <div>
-      <h1>Search page</h1>
-    </div>
-  );
+  return null;
 }
 
 export default SearchPage;

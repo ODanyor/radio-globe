@@ -6,11 +6,8 @@ async function handleSuccess(response: Response) {
   return data;
 }
 
-// function handleFailure(error: any) {
-//   throw new Error(error);
-// }
-
 function getPlaces() {
+  // NOTE: extracing geo to separate fields for Globe component
   async function handleSuccess(response: Response) {
     const { data: { list } } = await response.json();
     const fetchedPlaces: Place[] = list.map((item: PlaceOrigin) => {
@@ -22,24 +19,24 @@ function getPlaces() {
     return fetchedPlaces;
   }
 
-  return client('places').then(handleSuccess);
+  return client('places', { cache: 'force-cache' }).then(handleSuccess);
 }
 
-function getStationsUrl(stationId: string) {
-  return client(`page/${stationId}`).then(handleSuccess);
+function getPage(id: string) {
+  return client(`page/${id}`).then(handleSuccess);
 }
 
-function getStationUrl(stationId: string) {
-  return client(`channel/${stationId}`).then(handleSuccess);
+function getChannel(id: string) {
+  return client(`channel/${id}`).then(handleSuccess);
 }
 
-function getStreamUrl(stationId: string) {
-  return client(`listen/${stationId}`).then(handleSuccess)
+function getStream(id: string) {
+  return client(`listen/${id}`).then(handleSuccess)
 }
 
 export {
   getPlaces,
-  getStationsUrl,
-  getStationUrl,
-  getStreamUrl,
+  getPage,
+  getChannel,
+  getStream,
 };

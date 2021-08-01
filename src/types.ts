@@ -4,8 +4,8 @@ export type ReactComponent = {
 
 export interface Params {
   method: string;
-  city: string;
-  stationId: string;
+  title: string;
+  id: string;
 };
 
 export interface PlaceOrigin {

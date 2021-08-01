@@ -9,8 +9,7 @@ function GlobeComponent() {
   const history = useHistory();
   const [places, setPlaces] = React.useState<Place[]>([]);
 
-  function handlePointClick(point: object) {
-    // @ts-ignore
+  function handlePointClick(point: Place) {
     history.push(point.url);
   }
 
@@ -27,6 +26,7 @@ function GlobeComponent() {
       pointAltitude={0}
       pointRadius={0.25}
       pointResolution={6}
+      // @ts-ignore
       onPointClick={handlePointClick}
     />
   );

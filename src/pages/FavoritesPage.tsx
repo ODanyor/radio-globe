@@ -5,11 +5,7 @@ function FavoritesPage() {
     console.log('Favorites page loaded');
   }, []);
   
-  return (
-    <div>
-      <h1>Favorites page</h1>
-    </div>
-  );
+  return null;
 }
 
 export default FavoritesPage;
