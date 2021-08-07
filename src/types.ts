@@ -30,15 +30,18 @@ export interface ContentItemListen {
   href: string;
 };
 
+export interface Page {
+  map: string;
+  url: string;
+  count: number;
+  title: string;
+  subtitle: string;
+  content?: ContentItem[];
+}
+
 export interface ContentItemPage {
   title: string;
-  page: {
-    map: string;
-    url: string;
-    count: number;
-    title: string;
-    subtitle: string;
-  };
+  page: Page;
   rightDetail?: string;
   leftAccessory?: 'chevron-left';
   leftAccessoryCount?: number;
