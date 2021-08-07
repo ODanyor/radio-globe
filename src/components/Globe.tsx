@@ -24,7 +24,7 @@ function GlobeComponent() {
       pointsData={places}
       pointLabel='point label'
       pointAltitude={0}
-      pointRadius={0.25}
+      pointRadius={0.20}
       pointResolution={6}
       // @ts-ignore
       onPointClick={handlePointClick}

@@ -7,7 +7,7 @@ async function handleSuccess(response: Response) {
 }
 
 function getPlaces() {
-  // NOTE: extracing geo to separate fields for Globe component
+  // NOTE: transforming data structure to suit to Globe component
   async function handleSuccess(response: Response) {
     const { data: { list } } = await response.json();
     const fetchedPlaces: Place[] = list.map((item: PlaceOrigin) => {
