@@ -4,7 +4,7 @@ type ErrorFallbackProps = {
   canReset: boolean;
   error: any;
   resetErrorBoundary: () => void;
-};
+}
 
 function ErrorFallback({ canReset, error, resetErrorBoundary }: ErrorFallbackProps) {
   return (

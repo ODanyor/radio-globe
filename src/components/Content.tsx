@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Box, Heading, Text } from '@chakra-ui/react';
+import { ContentItem } from 'types';
 
 type ContentProps = {
-  title: string;
-  content: any;
+  content: ContentItem;
 }
 
-function Content({ title, content }: ContentProps) {
+function Content({ content }: ContentProps) {
   function getContent() {
     return content.items.map((item: any, index: number) => {
       let { subtitle, href: path } = item;
@@ -28,7 +28,7 @@ function Content({ title, content }: ContentProps) {
 
   return (
     <Box mb="3rem">
-      <Heading as="h3" size="lg" mb="1rem">{title}</Heading>
+      <Heading as="h3" size="2xl" mb="1rem">{content.title}</Heading>
       {getContent()}
     </Box>
   );

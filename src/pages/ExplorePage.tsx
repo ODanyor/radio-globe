@@ -1,26 +1,35 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useQuery } from 'react-query';
+import { Box, Heading } from '@chakra-ui/react';
+import { Content } from 'components';
 import { getPage, getChannel } from 'services/service';
 import { useChannelContext, setChannel, setContext } from 'services/channel';
 import { setCache } from 'utils/cache';
-import { Params } from 'types';
-import { Box, Heading } from '@chakra-ui/react';
-import { Content } from 'components';
+import { instanceOf } from 'utils/type';
+import {
+  Params,
+  ContentItem,
+  ContentItemListen,
+  ContentItemPage,
+  Channel,
+} from 'types';
 
 function useUpdateCache(key: string, value: any) {
-  React.useEffect(() => setCache(key, value), [key, value]);
+  useEffect(() => setCache(key, value), [key, value]);
 }
 
-function getItemId(item: any) {
-  let path = item.href;
-  if (item.page) path = item.page.url;
+function getItemId(item: ContentItemListen | ContentItemPage) {
+  let path;
+  if (instanceOf<ContentItemListen>(item, 'href')) path = item.href;
+  else if (instanceOf<ContentItemPage>(item, 'page')) path = item.page.url;
+  else throw new Error('Undefined item type in getItemId function.');
 
   const parsedPath = path.split('/');
   return parsedPath[parsedPath.length - 1];
 }
 
-function findChannelContextIndex(content: any, id: string) {
+function findChannelContextIndex(content: ContentItem[], id: string) {
   for (let x = 0; x < content.length; x++) {
     for (let y = 0; y < content[x].items.length; y++) {
       const contentItemId = getItemId(content[x].items[y]);
@@ -29,27 +38,31 @@ function findChannelContextIndex(content: any, id: string) {
   }
 }
 
+function updateChannel({ queryKey }: { queryKey: string[] }) {
+  if (queryKey[1] === 'listen') return getChannel(queryKey[2]);
+  return undefined;
+}
+
 function ExplorePage() {
   const location = useLocation();
   const { method, id } = useParams<Params>();
-  const [channel, channelDispatch] = useChannelContext();
+  const [, channelDispatch] = useChannelContext();
 
-  const pageQuery = useQuery(['page', id], () => getPage(id));
-  const channelQuery = useQuery(['channel', method, id], () => {
-    if (method === 'listen') return getChannel(id);
-    return undefined;
+  const pageQuery = useQuery(['page', method, id], () => {
+    return getPage(id);
   });
+  const channelQuery = useQuery(['channel', method, id], updateChannel);
 
   useUpdateCache('_immortal|location', location.pathname);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (pageQuery.isFetched && channelQuery.isFetched) {
       const id = getItemId(pageQuery.data.content[0].items[0]);
 
       let fetchedChannel = channelQuery.data;
 
       if (!channelQuery.data) (async () => {
-        await getChannel(id).then(res => fetchedChannel = res);
+        await getChannel(id).then((res: Channel) => fetchedChannel = res);
       })();
 
       setChannel(channelDispatch, fetchedChannel);
@@ -65,14 +78,12 @@ function ExplorePage() {
     channelQuery.data,
   ]);
 
-  // console.log(channel);
-
-  if (pageQuery.isLoading) return <Heading color="white">Loading ...</Heading>
+  if (pageQuery.isLoading) return <Heading color="white">Loading ...</Heading>;
 
   function getContent() {
     return pageQuery.data.content.map(
-      (content: any, index: number) =>
-        <Content key={index} title={content.title} content={content} />
+      (content: ContentItem, index: number) =>
+        <Content key={index} content={content} />
     );
   }
 
