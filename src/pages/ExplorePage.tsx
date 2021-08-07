@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { Box, Heading } from '@chakra-ui/react';
@@ -13,6 +13,7 @@ import {
   ContentItemListen,
   ContentItemPage,
   Channel,
+  Page,
 } from 'types';
 
 function useUpdateCache(key: string, value: any) {
@@ -48,8 +49,20 @@ function ExplorePage() {
   const { method, id } = useParams<Params>();
   const [, channelDispatch] = useChannelContext();
 
+  const cachedPage = useRef<Page | null>(null);
   const pageQuery = useQuery(['page', method, id], () => {
-    return getPage(id);
+    if (!cachedPage.current || method === 'visit') return getPage(id).then((res: Page) => {
+      cachedPage.current = res;
+      return res;
+    });
+    
+    const contextIndex = findChannelContextIndex(cachedPage.current.content!, id);
+    if (typeof contextIndex !== 'number') return getPage(id).then((res: Page) => {
+      cachedPage.current = res;
+      return res;
+    });
+    
+    return cachedPage.current;
   });
   const channelQuery = useQuery(['channel', method, id], updateChannel);
 
@@ -57,7 +70,7 @@ function ExplorePage() {
 
   useEffect(() => {
     if (pageQuery.isFetched && channelQuery.isFetched) {
-      const id = getItemId(pageQuery.data.content[0].items[0]);
+      const id = getItemId(pageQuery.data!.content![0].items[0]);
 
       let fetchedChannel = channelQuery.data;
 
@@ -66,9 +79,9 @@ function ExplorePage() {
       })();
 
       setChannel(channelDispatch, fetchedChannel);
-      const contextIndex = findChannelContextIndex(pageQuery.data.content, id);
+      const contextIndex = findChannelContextIndex(pageQuery.data!.content, id);
       if (contextIndex !== undefined)
-        setContext(channelDispatch, pageQuery.data.content[contextIndex].items);
+        setContext(channelDispatch, pageQuery.data!.content[contextIndex].items);
     }
   }, [
     channelDispatch,
@@ -81,7 +94,7 @@ function ExplorePage() {
   if (pageQuery.isLoading) return <Heading color="white">Loading ...</Heading>;
 
   function getContent() {
-    return pageQuery.data.content.map(
+    return pageQuery.data!.content.map(
       (content: ContentItem, index: number) =>
         <Content key={index} content={content} />
     );

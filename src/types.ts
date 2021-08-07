@@ -36,7 +36,7 @@ export interface Page {
   count: number;
   title: string;
   subtitle: string;
-  content?: ContentItem[];
+  content: ContentItem[];
 }
 
 export interface ContentItemPage {
