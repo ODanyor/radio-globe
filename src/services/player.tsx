@@ -28,7 +28,7 @@ function playerReducer(state: any, action: any) {
   }
 }
 
-export function PlayerProvider({ children }: ReactComponent) {
+function PlayerProvider({ children }: ReactComponent) {
   const [state, dispatch] = React.useReducer(playerReducer, initialState);
 
   return (
@@ -38,24 +38,34 @@ export function PlayerProvider({ children }: ReactComponent) {
   );
 }
 
-export function usePlayerContext() {
+function usePlayerContext() {
   const context: any = React.useContext(PlayerContext);
   if (!context) throw new Error('usePlayerContext must be used within PlayerProvider');
   return context;
 }
 
-export function setLocked(dispatch: React.Dispatch<any>, value: boolean) {
+function setLocked(dispatch: React.Dispatch<any>, value: boolean) {
   dispatch({ type: 'SET_LOCKED', payload: value })
 }
-export function setPlaying(dispatch: React.Dispatch<any>, value: boolean) {
+function setPlaying(dispatch: React.Dispatch<any>, value: boolean) {
   dispatch({ type: 'SET_PLAYING', payload: value })
 }
-export function setLoading(dispatch: React.Dispatch<any>, value: boolean) {
+function setLoading(dispatch: React.Dispatch<any>, value: boolean) {
   dispatch({ type: 'SET_LOADING', payload: value })
 }
-export function setVolue(dispatch: React.Dispatch<any>, value: number) {
+function setVolue(dispatch: React.Dispatch<any>, value: number) {
   dispatch({ type: 'SET_LOADING', payload: value })
 }
-export function setVolumeSliderSupported(dispatch: React.Dispatch<any>, value: boolean) {
+function setVolumeSliderSupported(dispatch: React.Dispatch<any>, value: boolean) {
   dispatch({ type: 'SET_VOLUME_SLIDER_SUPPORTED', payload: value })
 }
+
+export {
+  PlayerProvider,
+  usePlayerContext,
+  setLocked,
+  setPlaying,
+  setLoading,
+  setVolue,
+  setVolumeSliderSupported,
+};

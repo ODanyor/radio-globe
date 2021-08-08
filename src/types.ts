@@ -9,6 +9,7 @@ interface Identifier {
 
 export interface Params extends Identifier {
   method: string;
+  option: string;
 };
 
 export interface PlaceOrigin extends Identifier {

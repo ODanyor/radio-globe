@@ -30,6 +30,10 @@ function getChannel(id: string) {
   return client(`channel/${id}`).then(handleSuccess);
 }
 
+function getAllChannels(id: string) {
+  return client(`channel/${id}/channels`).then(handleSuccess);
+}
+
 function getStream(id: string) {
   return client(`listen/${id}`).then(handleSuccess)
 }
@@ -38,5 +42,6 @@ export {
   getPlaces,
   getPage,
   getChannel,
+  getAllChannels,
   getStream,
 };

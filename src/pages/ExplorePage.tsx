@@ -3,7 +3,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { Box, Heading } from '@chakra-ui/react';
 import { Content } from 'components';
-import { getPage, getChannel } from 'services/service';
+import { getPage, getChannel, getAllChannels } from 'services/service';
 import { useChannelContext, setChannel, setContext } from 'services/channel';
 import { setCache } from 'utils/cache';
 import { instanceOf } from 'utils/type';
@@ -46,7 +46,7 @@ function updateChannel({ queryKey }: { queryKey: string[] }) {
 
 function ExplorePage() {
   const location = useLocation();
-  const { method, id } = useParams<Params>();
+  const { method, id, option } = useParams<Params>();
   const [, channelDispatch] = useChannelContext();
 
   const cachedPage = useRef<Page | null>(null);
@@ -56,7 +56,7 @@ function ExplorePage() {
       return res;
     });
     
-    const contextIndex = findChannelContextIndex(cachedPage.current.content!, id);
+    const contextIndex = findChannelContextIndex(cachedPage.current.content, id);
     if (typeof contextIndex !== 'number') return getPage(id).then((res: Page) => {
       cachedPage.current = res;
       return res;
@@ -70,7 +70,9 @@ function ExplorePage() {
 
   useEffect(() => {
     if (pageQuery.isFetched && channelQuery.isFetched) {
-      const id = getItemId(pageQuery.data!.content![0].items[0]);
+      const id = getItemId(pageQuery.data!.content[0].items[0]);
+
+      if (option) getAllChannels(id).then(res => console.log(res));
 
       let fetchedChannel = channelQuery.data;
 
@@ -84,6 +86,7 @@ function ExplorePage() {
         setContext(channelDispatch, pageQuery.data!.content[contextIndex].items);
     }
   }, [
+    option,
     channelDispatch,
     pageQuery.isFetched,
     pageQuery.data,
@@ -91,12 +94,12 @@ function ExplorePage() {
     channelQuery.data,
   ]);
 
-  if (pageQuery.isLoading) return <Heading color="white">Loading ...</Heading>;
+  if (!pageQuery.data) return <Heading color="white">Loading ...</Heading>;
 
   function getContent() {
+    console.log('render');
     return pageQuery.data!.content.map(
-      (content: ContentItem, index: number) =>
-        <Content key={index} content={content} />
+      (content: ContentItem, index: number) => <Content key={index} content={content} />
     );
   }
 
