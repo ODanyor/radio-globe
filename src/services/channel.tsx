@@ -19,17 +19,7 @@ function useChannelContext() {
   return context;
 }
 
-function setChannel(dispatch: React.Dispatch<any>, channel: any) {
-  dispatch({ channel });
-}
-
-function setContext(dispatch: React.Dispatch<any>, context: any) {
-  dispatch((state: any) => ({ ...state, context }));
-}
-
 export {
   ChannelProvider,
   useChannelContext,
-  setChannel,
-  setContext,
 };

@@ -3,3 +3,4 @@ export { default as Content } from './Content';
 export { default as Globe } from './Globe';
 export { default as Navbar } from './Navbar';
 export { default as Player } from './Player';
+export { default as Spinner } from './Spinner';
