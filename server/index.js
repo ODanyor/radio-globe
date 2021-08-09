@@ -10,9 +10,9 @@ app.use(cors());
 // Radio Garden API
 const getPlacesUrl = () => 'http://radio.garden/api/ara/content/places';
 const getChannelsUrl = (stationId) => `http://radio.garden/api/ara/content/page/${stationId}`;
-const getAllChannelsUrl = (stationId) => `http://radio.garden/api/ara/content/page/B7DS4V1m/channels`;
-const getChannelUrl = (stationId) => `http://radio.garden/api/ara/content/channel/${stationId}`;
-const getStreamUrl = (stationId) => `http://radio.garden/api/ara/content/listen/${stationId}/channel.mp3`;
+const getAllChannelsUrl = (stationId) => `http://radio.garden/api/ara/content/page/${stationId}/channels`;
+const getChannelUrl = (channelId) => `http://radio.garden/api/ara/content/channel/${channelId}`;
+const getStreamUrl = (channelId) => `http://radio.garden/api/ara/content/listen/${channelId}/channel.mp3`;
 
 app.get('/api/places', async function(req, res) {
   await axios.get(getPlacesUrl()).then(
@@ -27,9 +27,9 @@ app.get('/api/page/:stationId', async function (req, res) {
     (error) => res.status(500).send(error)
   );
 });
-app.get('/api/channel/:stationId', async function (req, res) {
-  const { stationId } = req.params;
-  await axios.get(getChannelUrl(stationId)).then(
+app.get('/api/channel/:channelId', async function (req, res) {
+  const { channelId } = req.params;
+  await axios.get(getChannelUrl(channelId)).then(
     ({data}) => res.send(data),
     (error) => res.status(500).send(error)
   );
@@ -41,9 +41,9 @@ app.get('/api/channel/:stationId/channels', async function (req, res) {
     (error) => res.status(500).send(error)
   );
 });
-app.get('/api/listen/:stationId', async function (req, res) {
-  const { stationId } = req.params;
-  await axios.get(getStreamUrl(stationId)).then(
+app.get('/api/listen/:channelId', async function (req, res) {
+  const { channelId } = req.params;
+  await axios.get(getStreamUrl(channelId)).then(
     ({data}) => res.send(data),
     (error) => res.status(500).send(error)
   );

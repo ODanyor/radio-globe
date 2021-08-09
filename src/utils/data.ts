@@ -9,7 +9,7 @@ import {
   PageAndChannelState
 } from 'types';
 
-function getItemId(item: ContentItemListen | ContentItemPage) {
+function getItemId(item: ContentItemListen | ContentItemPage): string {
   let path;
   if (instanceOf<ContentItemListen>(item, 'href')) path = item.href;
   else if (instanceOf<ContentItemPage>(item, 'page')) path = item.page.url;
@@ -19,7 +19,7 @@ function getItemId(item: ContentItemListen | ContentItemPage) {
   return parsedPath[parsedPath.length - 1];
 }
 
-function findChannelContextIndex(content: ContentItem[], id: string) {
+function findChannelContextIndex(content: ContentItem[], id: string): number | undefined {
   for (let x = 0; x < content.length; x++) {
     for (let y = 0; y < content[x].items.length; y++) {
       const contentItemId = getItemId(content[x].items[y]);
