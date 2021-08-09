@@ -1,10 +1,10 @@
-import React from 'react';
+import { createContext, useState, useContext } from 'react';
 import { ReactComponent } from 'types';
 
-const PageContext = React.createContext({});
+const PageContext = createContext({});
 
 function PageProvider({ children }: ReactComponent) {
-  const [state, dispatch] = React.useState();
+  const [state, dispatch] = useState();
 
   return (
     <PageContext.Provider value={[state, dispatch]}>
@@ -14,7 +14,7 @@ function PageProvider({ children }: ReactComponent) {
 }
 
 function usePageContext() {
-  const context: any = React.useContext(PageContext);
+  const context: any = useContext(PageContext);
   if (!context) throw new Error('usePageContext must be used within PageProvider');
   return context;
 }

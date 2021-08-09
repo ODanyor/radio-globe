@@ -1,7 +1,7 @@
-import React from 'react';
+import { createContext, useReducer, useContext } from 'react';
 import { ReactComponent } from 'types';
 
-const PlayerContext = React.createContext({});
+const PlayerContext = createContext({});
 
 const initialState = {
   locked: false,
@@ -29,7 +29,7 @@ function playerReducer(state: any, action: any) {
 }
 
 function PlayerProvider({ children }: ReactComponent) {
-  const [state, dispatch] = React.useReducer(playerReducer, initialState);
+  const [state, dispatch] = useReducer(playerReducer, initialState);
 
   return (
     <PlayerContext.Provider value={[state, dispatch]}>
@@ -39,7 +39,7 @@ function PlayerProvider({ children }: ReactComponent) {
 }
 
 function usePlayerContext() {
-  const context: any = React.useContext(PlayerContext);
+  const context: any = useContext(PlayerContext);
   if (!context) throw new Error('usePlayerContext must be used within PlayerProvider');
   return context;
 }

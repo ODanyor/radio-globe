@@ -4,15 +4,14 @@ import { getPageAndChannelState, findChannelContextIndex } from 'utils/data';
 import { usePageContext } from 'services/page';
 import { useChannelContext } from 'services/channel';
 import { getAllChannels } from 'services/service';
-import { Content, Spinner } from 'components';
-import { Box } from '@chakra-ui/react';
+import { Content } from 'components';
+import { Box, Spinner } from '@chakra-ui/react';
 import { Params, ContentItem, Page } from 'types';
 
 function ExplorePage() {
   const { method, id, option } = useParams<Params>();
   const [page, setPage] = usePageContext();
-  const [channel, setChannel] = useChannelContext();
-  console.log({page, channel});
+  const [, setChannel] = useChannelContext();
 
   useEffect(() => {
     if (method === 'listen' && page) {
@@ -25,9 +24,10 @@ function ExplorePage() {
       setPage(res.page);
       setChannel(res.channel);
     });
+    // TODO: page is required in dependencies
   }, [method, id, option, setPage, setChannel]); // eslint-disable-line
 
-  if (!page) return <Spinner />;
+  if (!page) return <Spinner color="white" size="xl" />;
 
   function getContent() {
     return page.content.map(
