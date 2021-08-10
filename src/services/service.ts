@@ -7,7 +7,7 @@ async function handleSuccess(response: Response) {
 }
 
 function getPlaces() {
-  // NOTE: transforming data structure to suit to Globe component
+  // DESC: transforming data structure to suit Globe component
   async function handleSuccess(response: Response) {
     const { data: { list } } = await response.json();
     const fetchedPlaces: Place[] = list.map((item: PlaceOrigin) => {

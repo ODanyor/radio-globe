@@ -1,4 +1,4 @@
-import { createContext, useReducer, useContext } from 'react';
+import React, { createContext, useReducer, useContext } from 'react';
 import { ReactComponent } from 'types';
 
 const PlayerContext = createContext({});
@@ -7,6 +7,7 @@ const initialState = {
   locked: false,
   playing: false,
   loading: false,
+  muted: false,
   volume: 0.8,
   volumeSliderSupported: true,
 };
@@ -19,7 +20,9 @@ function playerReducer(state: any, action: any) {
       return { ...state, playing: action.payload };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
-    case 'SET_VOLUE':
+    case 'SET_MUTED':
+      return { ...state, muted: action.payload };
+    case 'SET_VOLUME':
       return { ...state, volume: action.payload };
     case 'SET_VOLUME_SLIDER_SUPPORTED':
       return { ...state, volumeSliderSupported: action.payload };
@@ -53,8 +56,11 @@ function setPlaying(dispatch: React.Dispatch<any>, value: boolean) {
 function setLoading(dispatch: React.Dispatch<any>, value: boolean) {
   dispatch({ type: 'SET_LOADING', payload: value })
 }
-function setVolue(dispatch: React.Dispatch<any>, value: number) {
-  dispatch({ type: 'SET_LOADING', payload: value })
+function setMuted(dispatch: React.Dispatch<any>, value: boolean) {
+  dispatch({ type: 'SET_MUTED', payload: value });
+}
+function setVolume(dispatch: React.Dispatch<any>, value: number) {
+  dispatch({ type: 'SET_VOLUME', payload: value })
 }
 function setVolumeSliderSupported(dispatch: React.Dispatch<any>, value: boolean) {
   dispatch({ type: 'SET_VOLUME_SLIDER_SUPPORTED', payload: value })
@@ -66,6 +72,7 @@ export {
   setLocked,
   setPlaying,
   setLoading,
-  setVolue,
+  setMuted,
+  setVolume,
   setVolumeSliderSupported,
 };

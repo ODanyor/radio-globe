@@ -43,10 +43,11 @@ app.get('/api/channel/:stationId/channels', async function (req, res) {
 });
 app.get('/api/listen/:channelId', async function (req, res) {
   const { channelId } = req.params;
-  await axios.get(getStreamUrl(channelId)).then(
-    ({data}) => res.send(data),
-    (error) => res.status(500).send(error)
-  );
+  return res.send({data: getStreamUrl(channelId)});
+  // await axios.get(getStreamUrl(channelId)).then(
+  //   ({data}) => res.send(data),
+  //   (error) => res.status(500).send(error)
+  // );
 });
 
 app.listen(port, function () {
