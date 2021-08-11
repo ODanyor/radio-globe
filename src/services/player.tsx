@@ -24,7 +24,7 @@ function playerReducer(state: any, action: any) {
       return { ...state, muted: action.payload };
     case 'SET_VOLUME':
       return { ...state, volume: action.payload };
-    case 'SET_VOLUME_SLIDER_SUPPORTED':
+    case 'SET_VOLUME-SLIDER-SUPPORTED':
       return { ...state, volumeSliderSupported: action.payload };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -63,7 +63,7 @@ function setVolume(dispatch: React.Dispatch<any>, value: number) {
   dispatch({ type: 'SET_VOLUME', payload: value })
 }
 function setVolumeSliderSupported(dispatch: React.Dispatch<any>, value: boolean) {
-  dispatch({ type: 'SET_VOLUME_SLIDER_SUPPORTED', payload: value })
+  dispatch({ type: 'SET_VOLUME-SLIDER-SUPPORTED', payload: value })
 }
 
 export {

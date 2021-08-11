@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
 import ReactPlayer from 'react-player'
+import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useChannelContext } from 'services/channel';
 import { getStream } from 'services/service';
 import {
@@ -9,7 +10,9 @@ import {
   Slider,
   SliderFilledTrack,
   SliderThumb,
-  SliderTrack
+  SliderTrack,
+  Heading,
+  Text
 } from '@chakra-ui/react';
 import {
   FiPlay,
@@ -28,14 +31,17 @@ import {
   usePlayerContext,
   setLocked,
   setPlaying,
+  setLoading,
   setVolume,
   setMuted
 } from 'services/player';
 
 function Player() {
+  const [{navbarIsOpen}, interfaceDispatch] = useInterfaceContext();
   const [{
     locked,
     playing,
+    loading,
     volume,
     muted,
     volumeSliderSupported,
@@ -52,8 +58,11 @@ function Player() {
   }
 
   useEffect(() => {
-    if (channel.id) getStream(channel.id).then(setUrl);
-  }, [channel]);
+    if (channel.id) {
+      setLoading(playerDispatch, true);
+      getStream(channel.id).then(setUrl);
+    }
+  }, [channel, playerDispatch]);
 
   return (
     <Fragment>
@@ -62,11 +71,22 @@ function Player() {
         playing={playing}
         muted={muted}
         volume={volume}
-        style={{ display: 'none' }} />
-      <Center h="100px">
+        style={{ display: 'none' }}
+        onReady={() => setLoading(playerDispatch, false)} />
+
+      <Center flex="1">
+        <Flex
+          w="200px"
+          flexDir="column"
+          cursor="pointer"
+          onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
+          <Heading as="h4" size="md" color="#ffffcd">{channel.title}</Heading>
+          <Text color="white" fontSize="xx-small">{channel.place.title}, {channel.country.title}</Text>
+        </Flex>
+
         <IconButton
           aria-label="play/toggle"
-          icon={locked ? <FiUnlock /> : <FiLock />}
+          icon={locked ? <FiLock /> : <FiUnlock />}
           onClick={() => setLocked(playerDispatch, !locked)}
           borderRadius="100%"
           size="xs"
@@ -85,6 +105,7 @@ function Player() {
             aria-label="play/toggle"
             icon={playing ? <FiPause /> : <FiPlay />}
             onClick={() => setPlaying(playerDispatch, !playing)}
+            isLoading={loading}
             borderRadius="100%"
             size="lg" />
           <IconButton

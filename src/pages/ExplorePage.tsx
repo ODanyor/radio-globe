@@ -6,7 +6,7 @@ import { useChannelContext } from 'services/channel';
 import { getAllChannels } from 'services/service';
 import { Content } from 'components';
 import { Box, Spinner } from '@chakra-ui/react';
-import { Params, ContentItem, Page } from 'types';
+import { Params, ContentItem } from 'types';
 
 function ExplorePage() {
   const { method, id, option } = useParams<Params>();
@@ -19,7 +19,8 @@ function ExplorePage() {
       if (typeof channelContextIndex === 'number')
         getPageAndChannelState(id, page.content[channelContextIndex].items)
           .then(res => setChannel(res.channel));
-    } else if (option) getAllChannels(id).then((res: Page) => setPage(res));
+    }
+    else if (option) getAllChannels(id).then(setPage);
     else getPageAndChannelState(id).then(res => {
       setPage(res.page);
       setChannel(res.channel);
