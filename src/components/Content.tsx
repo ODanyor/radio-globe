@@ -1,7 +1,7 @@
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { Box, Heading, Text, Button } from '@chakra-ui/react';
 import { FiChevronLeft } from 'react-icons/fi';
-import { ContentItem } from 'types';
+import { ContentItem, Params } from 'types';
 
 type ContentProps = {
   content: ContentItem;
@@ -9,6 +9,7 @@ type ContentProps = {
 
 function Content({ content }: ContentProps) {
   const history = useHistory();
+  const {option} = useParams<Params>();
 
   function getContent() {
     return content.items.map((item: any, index: number) => {
@@ -31,7 +32,7 @@ function Content({ content }: ContentProps) {
 
   return (
     <Box mb="3rem">
-      {!content.title &&
+      {option &&
         <Button
           bg="#000011"
           leftIcon={<FiChevronLeft />}

@@ -42,7 +42,7 @@ export interface Page {
   title: string;
   subtitle: string;
   content: ContentItem[];
-}
+};
 
 export interface ContentItemPage {
   title: string;

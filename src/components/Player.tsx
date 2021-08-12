@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import ReactPlayer from 'react-player'
 import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useChannelContext } from 'services/channel';
@@ -35,8 +36,10 @@ import {
   setVolume,
   setMuted
 } from 'services/player';
+import { ContentItemListen } from 'types';
 
 function Player() {
+  const history = useHistory();
   const [{navbarIsOpen}, interfaceDispatch] = useInterfaceContext();
   const [{
     locked,
@@ -64,6 +67,18 @@ function Player() {
     }
   }, [channel, playerDispatch]);
 
+  function getIndexOfCurrentPlaying() {
+    return channel.context.findIndex((item: ContentItemListen) => item.href === channel.url);
+  }
+
+  function playPrevious() {
+    history.push(channel.context[getIndexOfCurrentPlaying() - 1].href);
+  }
+
+  function playNext() {
+    history.push(channel.context[getIndexOfCurrentPlaying() + 1].href);
+  }
+
   return (
     <Fragment>
       <ReactPlayer
@@ -75,6 +90,7 @@ function Player() {
         onReady={() => setLoading(playerDispatch, false)} />
 
       <Center flex="1">
+        {channel.title &&
         <Flex
           w="200px"
           flexDir="column"
@@ -82,12 +98,13 @@ function Player() {
           onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
           <Heading as="h4" size="md" color="#ffffcd">{channel.title}</Heading>
           <Text color="white" fontSize="xx-small">{channel.place.title}, {channel.country.title}</Text>
-        </Flex>
+        </Flex>}
 
         <IconButton
           aria-label="play/toggle"
           icon={locked ? <FiLock /> : <FiUnlock />}
           onClick={() => setLocked(playerDispatch, !locked)}
+          disabled={!channel.id}
           borderRadius="100%"
           size="xs"
           m="0 1rem" />
@@ -99,18 +116,30 @@ function Player() {
           <IconButton
             aria-label="play/back"
             icon={<FiSkipBack />}
+            onClick={playPrevious}
+            disabled={
+              !channel.context.length ||
+              getIndexOfCurrentPlaying() === 0
+            }
             borderRadius="100%"
             size="sm" />
           <IconButton
             aria-label="play/toggle"
             icon={playing ? <FiPause /> : <FiPlay />}
             onClick={() => setPlaying(playerDispatch, !playing)}
+            disabled={!channel.id || loading}
             isLoading={loading}
             borderRadius="100%"
             size="lg" />
           <IconButton
             aria-label="play/toggle"
             icon={<FiSkipForward />}
+            onClick={playNext}
+            disabled={
+              !channel.context.length ||
+              getIndexOfCurrentPlaying() === channel.context.length - 1 ||
+              channel.context[getIndexOfCurrentPlaying() + 1].rightAccessory
+            }
             borderRadius="100%"
             size="sm" />
         </Flex>
@@ -118,6 +147,7 @@ function Player() {
         <IconButton
           aria-label="play/toggle"
           icon={<FiHeart />}
+          disabled={!channel.id}
           borderRadius="100%"
           size="xs"
           m="0 1rem" />
@@ -134,7 +164,7 @@ function Player() {
           <Slider
             aria-label="slider-ex-1"
             defaultValue={volume}
-            onChangeEnd={(val) => setVolume(playerDispatch, val)}
+            onChange={(val) => setVolume(playerDispatch, val)}
             max={1}
             step={.1}>
             <SliderTrack>
