@@ -4,6 +4,8 @@ import ReactPlayer from 'react-player'
 import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useChannelContext } from 'services/channel';
 import { getStream } from 'services/service';
+import { getCache, setCache } from 'utils/cache';
+import { IMMORTAL_VOLUME } from 'utils/constants';
 import {
   Center,
   Flex,
@@ -61,6 +63,11 @@ function Player() {
   }
 
   useEffect(() => {
+    const cachedVolume = getCache(IMMORTAL_VOLUME);
+    if (cachedVolume) setVolume(playerDispatch, cachedVolume);
+  }, [playerDispatch]);
+
+  useEffect(() => {
     if (channel.id) {
       setLoading(playerDispatch, true);
       getStream(channel.id).then(setUrl);
@@ -77,6 +84,11 @@ function Player() {
 
   function playNext() {
     history.push(channel.context[getIndexOfCurrentPlaying() + 1].href);
+  }
+
+  function handleVolume(value: number) {
+    setCache(IMMORTAL_VOLUME, value);
+    setVolume(playerDispatch, value);
   }
 
   return (
@@ -163,8 +175,8 @@ function Player() {
             m="0 1rem" />
           <Slider
             aria-label="slider-ex-1"
-            defaultValue={volume}
-            onChange={(val) => setVolume(playerDispatch, val)}
+            value={volume}
+            onChange={handleVolume}
             max={1}
             step={.1}>
             <SliderTrack>
