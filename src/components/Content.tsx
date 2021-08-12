@@ -31,7 +31,7 @@ function Content({ content }: ContentProps) {
   }
 
   return (
-    <Box mb="3rem">
+    <Box _notLast={{ marginBottom: '3rem' }}>
       {option &&
         <Button
           bg="#000011"
