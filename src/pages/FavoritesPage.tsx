@@ -1,11 +1,7 @@
-import React from 'react';
+import { Heading } from '@chakra-ui/react';
 
 function FavoritesPage() {
-  React.useEffect(() => {
-    console.log('Favorites page loaded');
-  }, []);
-  
-  return null;
+  return <Heading>Favorites Page</Heading>;
 }
 
 export default FavoritesPage;

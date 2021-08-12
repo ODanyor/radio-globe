@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useKeepLocationUpdated } from 'hooks/useKeepLocationUpdated';
 import { getPageAndChannelState, findChannelContextIndex } from 'utils/data';
 import { usePlayerContext } from 'services/player';
 import { usePageContext } from 'services/page';
@@ -14,6 +15,7 @@ function ExplorePage() {
   const [page, setPage] = usePageContext();
   const [, setChannel] = useChannelContext();
   const [{locked}] = usePlayerContext();
+  useKeepLocationUpdated();
 
   useEffect(() => {
     if (option) {

@@ -1,11 +1,7 @@
-import React from 'react';
+import { Heading } from '@chakra-ui/react';
 
 function SearchPage() {
-  React.useEffect(() => {
-    console.log('Search page loaded');
-  }, []);
-
-  return null;
+  return <Heading>Search Page</Heading>;
 }
 
 export default SearchPage;
