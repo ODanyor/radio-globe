@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react';
 import {
   FiPlay,
-  FiPause,
+  FiSquare,
   FiSkipBack, 
   FiSkipForward,
   FiLock,
@@ -86,16 +86,23 @@ function Player() {
   }
 
   function playPrevious() {
-    history.push(channel.context[getIndexOfCurrentPlaying() - 1].href);
+    const { context } = channel;
+
+    let path;
+    if (getIndexOfCurrentPlaying() === 0) path = context[context.length - 1].href;
+    else path = context[getIndexOfCurrentPlaying() - 1].href;
+
+    history.push(path);
   }
 
   function playNext() {
-    history.push(channel.context[getIndexOfCurrentPlaying() + 1].href);
-  }
+    const { context } = channel;
 
-  function handlePlayToggle() {
-    setPlaying(playerDispatch, !playing);
-    // playing && setUrl('');
+    let path;
+    if (getIndexOfCurrentPlaying() === context.length - 1) path = context[0].href;
+    else path = context[getIndexOfCurrentPlaying() + 1].href;
+    
+    history.push(path);
   }
 
   function handleLocked() {
@@ -155,16 +162,13 @@ function Player() {
           aria-label="play-back"
           icon={<FiSkipBack />}
           onClick={playPrevious}
-          disabled={
-            !channel.context.length ||
-            getIndexOfCurrentPlaying() === 0
-          }
+          disabled={!channel.context.length}
           borderRadius="100%"
           size="sm" />
         <IconButton
           aria-label="play-toggle"
-          icon={playing ? <FiPause /> : <FiPlay />}
-          onClick={handlePlayToggle}
+          icon={playing ? <FiSquare /> : <FiPlay />}
+          onClick={() => setPlaying(playerDispatch, !playing)}
           disabled={!channel.id || loading}
           isLoading={loading}
           borderRadius="100%"
@@ -173,11 +177,7 @@ function Player() {
           aria-label="play-forward"
           icon={<FiSkipForward />}
           onClick={playNext}
-          disabled={
-            !channel.context.length ||
-            getIndexOfCurrentPlaying() === channel.context.length - 1 ||
-            channel.context[getIndexOfCurrentPlaying() + 1].rightAccessory
-          }
+          disabled={!channel.context.length}
           borderRadius="100%"
           size="sm" />
       </Flex>
