@@ -28,14 +28,18 @@ function findChannelContextIndex(content: ContentItem[], id: string): number | u
   }
 }
 
-const getPageAndChannelState = (id: string, context = []) =>
+export function channelsOnly(items: any[]) {
+  return items.filter(item => item.href);
+}
+
+const getPageAndChannelState = (id: string, context: any[] = []) =>
   new Promise<PageAndChannelState>(async resolve => {
   const result: any = { channel: {} };
 
   if (!context.length) {
     await getPage(id).then((res: Page) => {
       result.page = res;
-      result.channel.context = res.content[0].items;
+      result.channel.context = channelsOnly(res.content[0].items);
       id = getItemId(res.content[0].items[0]);
     });
   } else result.channel.context = context;

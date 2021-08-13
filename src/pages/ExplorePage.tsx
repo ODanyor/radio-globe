@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useKeepLocationUpdated } from 'hooks/useKeepLocationUpdated';
-import { getPageAndChannelState, findChannelContextIndex } from 'utils/data';
+import { getPageAndChannelState, findChannelContextIndex, channelsOnly } from 'utils/data';
 import { usePlayerContext } from 'services/player';
 import { usePageContext } from 'services/page';
 import { useChannelContext } from 'services/channel';
@@ -26,7 +26,8 @@ function ExplorePage() {
     if (method === 'listen' && page && page.subtitle !== 'All Stations') {
       const channelContextIndex = findChannelContextIndex(page.content, id);
       if (typeof channelContextIndex === 'number') {
-        getPageAndChannelState(id, page.content[channelContextIndex].items)
+        const context = channelsOnly(page.content[channelContextIndex].items);
+        getPageAndChannelState(id, context)
           .then(res => !locked && setChannel(res.channel));
         return;
       }
