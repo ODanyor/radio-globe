@@ -5,7 +5,11 @@ import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useChannelContext } from 'services/channel';
 import { getStream } from 'services/service';
 import { getStored, setStored } from 'utils/store';
-import { IMMORTAL_VOLUME, IMMORTAL_CHANNEL_LOCKED } from 'utils/constants';
+import {
+  IMMORTAL_VOLUME,
+  IMMORTAL_MUTED,
+  IMMORTAL_CHANNEL_LOCKED
+} from 'utils/constants';
 import {
   Center,
   Flex,
@@ -56,9 +60,11 @@ function Player() {
 
   // DESC: setting up a cached values
   useEffect(() => {
+    const storedMuted = getStored(IMMORTAL_MUTED);
     const storedVolume = getStored(IMMORTAL_VOLUME);
     const storedLocked = getStored(IMMORTAL_CHANNEL_LOCKED);
 
+    if (storedMuted) setMuted(playerDispatch, storedMuted);
     if (storedVolume) setVolume(playerDispatch, storedVolume);
     if (storedLocked) setLocked(playerDispatch, storedLocked);
   }, [playerDispatch]);
@@ -93,6 +99,11 @@ function Player() {
   function handleLocked() {
     setStored(IMMORTAL_CHANNEL_LOCKED, !locked);
     setLocked(playerDispatch, !locked);
+  }
+
+  function handleMuted() {
+    setStored(IMMORTAL_MUTED, !muted);
+    setMuted(playerDispatch, !muted);
   }
 
   function handleVolume(value: number) {
@@ -187,7 +198,7 @@ function Player() {
           <IconButton
             aria-label="mute-toggle"
             icon={getVolumeIcon()}
-            onClick={() => setMuted(playerDispatch, !muted)}
+            onClick={handleMuted}
             borderRadius="100%"
             size="xs"
             m="0 1rem" />
