@@ -5,10 +5,15 @@ export function useAudioPlayer({src, playing, muted, volume}: AudioPlayer) {
   const audio = useMemo(() => new Audio(), []);
 
   useEffect(() => {
-    audio.src = src;
+    audio.setAttribute('src', src);
     playing && audio.play().catch(() => null);
   }, [audio, src]); // eslint-disable-line
-  useEffect(() => { playing ? audio.play() : audio.pause() }, [audio, playing]);
+  useEffect(() => {
+    if (playing) {
+      audio.load();
+      audio.play();
+    } else audio.pause() ;
+  }, [audio, playing]);
   useEffect(() => { audio.muted = muted }, [audio, muted]);
   useEffect(() => { audio.volume = volume }, [audio, volume]);
 
