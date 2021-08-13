@@ -4,8 +4,8 @@ import ReactPlayer from 'react-player'
 import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useChannelContext } from 'services/channel';
 import { getStream } from 'services/service';
-import { getCache, setCache } from 'utils/cache';
-import { IMMORTAL_VOLUME } from 'utils/constants';
+import { getStored, setStored } from 'utils/store';
+import { IMMORTAL_VOLUME, IMMORTAL_CHANNEL_LOCKED } from 'utils/constants';
 import {
   Center,
   Flex,
@@ -54,17 +54,13 @@ function Player() {
   const [channel] = useChannelContext();
   const [url, setUrl] = useState('');
 
-  function getVolumeIcon() {
-    if (muted) return <FiVolumeX />;
-
-    if (volume === 0) return <FiVolume />;
-    if (volume < .5) return <FiVolume1 />;
-    return <FiVolume2 />;
-  }
-
+  // DESC: setting up a cached values
   useEffect(() => {
-    const cachedVolume = getCache(IMMORTAL_VOLUME);
-    if (cachedVolume) setVolume(playerDispatch, cachedVolume);
+    const storedVolume = getStored(IMMORTAL_VOLUME);
+    const storedLocked = getStored(IMMORTAL_CHANNEL_LOCKED);
+
+    if (storedVolume) setVolume(playerDispatch, storedVolume);
+    if (storedLocked) setLocked(playerDispatch, storedLocked);
   }, [playerDispatch]);
 
   useEffect(() => {
@@ -73,6 +69,14 @@ function Player() {
       getStream(channel.id).then(setUrl);
     }
   }, [channel, playerDispatch]);
+
+  function getVolumeIcon() {
+    if (muted) return <FiVolumeX />;
+
+    if (volume === 0) return <FiVolume />;
+    if (volume < .5) return <FiVolume1 />;
+    return <FiVolume2 />;
+  }
 
   function getIndexOfCurrentPlaying() {
     return channel.context.findIndex((item: ContentItemListen) => item.href === channel.url);
@@ -86,8 +90,13 @@ function Player() {
     history.push(channel.context[getIndexOfCurrentPlaying() + 1].href);
   }
 
+  function handleLocked() {
+    setStored(IMMORTAL_CHANNEL_LOCKED, !locked);
+    setLocked(playerDispatch, !locked);
+  }
+
   function handleVolume(value: number) {
-    setCache(IMMORTAL_VOLUME, value);
+    setStored(IMMORTAL_VOLUME, value);
     setVolume(playerDispatch, value);
   }
 
@@ -108,14 +117,23 @@ function Player() {
           flexDir="column"
           cursor="pointer"
           onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
-          <Heading as="h4" size="md" color="#ffffcd">{channel.title}</Heading>
-          <Text color="white" fontSize="xx-small">{channel.place.title}, {channel.country.title}</Text>
+          <Heading
+            as="h4"
+            size="md"
+            color="#ffffcd">
+            {channel.title}
+          </Heading>
+          <Text
+            color="white"
+            fontSize="xx-small">
+            {channel.place.title}, {channel.country.title}
+          </Text>
         </Flex>}
 
         <IconButton
-          aria-label="play/toggle"
+          aria-label="lock-toggle"
           icon={locked ? <FiLock /> : <FiUnlock />}
-          onClick={() => setLocked(playerDispatch, !locked)}
+          onClick={handleLocked}
           disabled={!channel.id}
           borderRadius="100%"
           size="xs"
@@ -126,7 +144,7 @@ function Player() {
           justifyContent="space-between"
           alignItems="center">
           <IconButton
-            aria-label="play/back"
+            aria-label="play-back"
             icon={<FiSkipBack />}
             onClick={playPrevious}
             disabled={
@@ -136,7 +154,7 @@ function Player() {
             borderRadius="100%"
             size="sm" />
           <IconButton
-            aria-label="play/toggle"
+            aria-label="play-toggle"
             icon={playing ? <FiPause /> : <FiPlay />}
             onClick={() => setPlaying(playerDispatch, !playing)}
             disabled={!channel.id || loading}
@@ -144,7 +162,7 @@ function Player() {
             borderRadius="100%"
             size="lg" />
           <IconButton
-            aria-label="play/toggle"
+            aria-label="play-forward"
             icon={<FiSkipForward />}
             onClick={playNext}
             disabled={
@@ -157,7 +175,7 @@ function Player() {
         </Flex>
 
         <IconButton
-          aria-label="play/toggle"
+          aria-label="favorite"
           icon={<FiHeart />}
           disabled={!channel.id}
           borderRadius="100%"
@@ -167,7 +185,7 @@ function Player() {
         {volumeSliderSupported && 
         <Flex w="200px">
           <IconButton
-            aria-label="play/toggle"
+            aria-label="mute-toggle"
             icon={getVolumeIcon()}
             onClick={() => setMuted(playerDispatch, !muted)}
             borderRadius="100%"
