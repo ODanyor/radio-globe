@@ -74,3 +74,10 @@ export interface PageAndChannelState {
   page?: Page;
   channel: ChannelState;
 };
+
+export interface AudioPlayer {
+  src: string;
+  playing: boolean;
+  muted: boolean;
+  volume: number;
+};

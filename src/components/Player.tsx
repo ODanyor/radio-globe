@@ -1,10 +1,10 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import ReactPlayer from 'react-player'
 import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useChannelContext } from 'services/channel';
 import { getStream } from 'services/service';
 import { getStored, setStored } from 'utils/store';
+import { useAudioPlayer } from 'hooks/useAudioPlayer';
 import {
   IMMORTAL_VOLUME,
   IMMORTAL_MUTED,
@@ -70,10 +70,7 @@ function Player() {
   }, [playerDispatch]);
 
   useEffect(() => {
-    if (channel.id) {
-      setLoading(playerDispatch, true);
-      getStream(channel.id).then(setUrl);
-    }
+    if (channel.id) getStream(channel.id).then(setUrl);
   }, [channel, playerDispatch]);
 
   function getVolumeIcon() {
@@ -96,6 +93,11 @@ function Player() {
     history.push(channel.context[getIndexOfCurrentPlaying() + 1].href);
   }
 
+  function handlePlayToggle() {
+    setPlaying(playerDispatch, !playing);
+    // playing && setUrl('');
+  }
+
   function handleLocked() {
     setStored(IMMORTAL_CHANNEL_LOCKED, !locked);
     setLocked(playerDispatch, !locked);
@@ -111,111 +113,105 @@ function Player() {
     setVolume(playerDispatch, value);
   }
 
+  const { onLoadStart, onLoadedData } = useAudioPlayer({src: url, playing, muted, volume});
+  onLoadStart(()=> setLoading(playerDispatch, true));
+  onLoadedData(() => setLoading(playerDispatch, false));
+
   return (
-    <Fragment>
-      <ReactPlayer
-        url={url}
-        playing={playing}
-        muted={muted}
-        volume={volume}
-        style={{ display: 'none' }}
-        onReady={() => setLoading(playerDispatch, false)} />
+    <Center flex="1">
+      {channel.title &&
+      <Flex
+        w="200px"
+        flexDir="column"
+        cursor="pointer"
+        onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
+        <Heading
+          as="h4"
+          size="md"
+          color="#ffffcd">
+          {channel.title}
+        </Heading>
+        <Text
+          color="white"
+          fontSize="xx-small">
+          {channel.place.title}, {channel.country.title}
+        </Text>
+      </Flex>}
 
-      <Center flex="1">
-        {channel.title &&
-        <Flex
-          w="200px"
-          flexDir="column"
-          cursor="pointer"
-          onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
-          <Heading
-            as="h4"
-            size="md"
-            color="#ffffcd">
-            {channel.title}
-          </Heading>
-          <Text
-            color="white"
-            fontSize="xx-small">
-            {channel.place.title}, {channel.country.title}
-          </Text>
-        </Flex>}
+      <IconButton
+        aria-label="lock-toggle"
+        icon={locked ? <FiLock /> : <FiUnlock />}
+        onClick={handleLocked}
+        disabled={!channel.id}
+        borderRadius="100%"
+        size="xs"
+        m="0 1rem" />
 
+      <Flex
+        w="150px"
+        justifyContent="space-between"
+        alignItems="center">
         <IconButton
-          aria-label="lock-toggle"
-          icon={locked ? <FiLock /> : <FiUnlock />}
-          onClick={handleLocked}
-          disabled={!channel.id}
+          aria-label="play-back"
+          icon={<FiSkipBack />}
+          onClick={playPrevious}
+          disabled={
+            !channel.context.length ||
+            getIndexOfCurrentPlaying() === 0
+          }
+          borderRadius="100%"
+          size="sm" />
+        <IconButton
+          aria-label="play-toggle"
+          icon={playing ? <FiPause /> : <FiPlay />}
+          onClick={handlePlayToggle}
+          disabled={!channel.id || loading}
+          isLoading={loading}
+          borderRadius="100%"
+          size="lg" />
+        <IconButton
+          aria-label="play-forward"
+          icon={<FiSkipForward />}
+          onClick={playNext}
+          disabled={
+            !channel.context.length ||
+            getIndexOfCurrentPlaying() === channel.context.length - 1 ||
+            channel.context[getIndexOfCurrentPlaying() + 1].rightAccessory
+          }
+          borderRadius="100%"
+          size="sm" />
+      </Flex>
+
+      <IconButton
+        aria-label="favorite"
+        icon={<FiHeart />}
+        disabled={!channel.id}
+        borderRadius="100%"
+        size="xs"
+        m="0 1rem" />
+
+      {volumeSliderSupported && 
+      <Flex w="200px">
+        <IconButton
+          aria-label="mute-toggle"
+          icon={getVolumeIcon()}
+          onClick={handleMuted}
           borderRadius="100%"
           size="xs"
           m="0 1rem" />
-
-        <Flex
-          w="150px"
-          justifyContent="space-between"
-          alignItems="center">
-          <IconButton
-            aria-label="play-back"
-            icon={<FiSkipBack />}
-            onClick={playPrevious}
-            disabled={
-              !channel.context.length ||
-              getIndexOfCurrentPlaying() === 0
-            }
-            borderRadius="100%"
-            size="sm" />
-          <IconButton
-            aria-label="play-toggle"
-            icon={playing ? <FiPause /> : <FiPlay />}
-            onClick={() => setPlaying(playerDispatch, !playing)}
-            disabled={!channel.id || loading}
-            isLoading={loading}
-            borderRadius="100%"
-            size="lg" />
-          <IconButton
-            aria-label="play-forward"
-            icon={<FiSkipForward />}
-            onClick={playNext}
-            disabled={
-              !channel.context.length ||
-              getIndexOfCurrentPlaying() === channel.context.length - 1 ||
-              channel.context[getIndexOfCurrentPlaying() + 1].rightAccessory
-            }
-            borderRadius="100%"
-            size="sm" />
-        </Flex>
-
-        <IconButton
-          aria-label="favorite"
-          icon={<FiHeart />}
-          disabled={!channel.id}
-          borderRadius="100%"
-          size="xs"
-          m="0 1rem" />
-
-        {volumeSliderSupported && 
-        <Flex w="200px">
-          <IconButton
-            aria-label="mute-toggle"
-            icon={getVolumeIcon()}
-            onClick={handleMuted}
-            borderRadius="100%"
-            size="xs"
-            m="0 1rem" />
-          <Slider
-            aria-label="slider-ex-1"
-            value={volume}
-            onChange={handleVolume}
-            max={1}
-            step={.1}>
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb />
-          </Slider>
-        </Flex>}
-      </Center>
-    </Fragment>
+        <Slider
+          aria-label="slider-ex-1"
+          value={volume}
+          onChange={handleVolume}
+          max={1}
+          step={.1}>
+          <SliderTrack>
+            <SliderFilledTrack />
+          </SliderTrack>
+          <SliderThumb />
+        </Slider>
+      </Flex>}
+    </Center>
   );
 }
 
