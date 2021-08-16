@@ -1,45 +1,49 @@
 import { useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
-import { getPageAndChannelState, findChannelContextIndex, channelsOnly } from 'utils/data';
+import { findChannelContextIndex, getItemId } from 'utils/data';
+import { useBrowserContext, setChannelId } from 'services/browser';
 import { usePlayerContext } from 'services/player';
 import { usePageContext } from 'services/page';
-import { useChannelContext } from 'services/channel';
-import { getAllChannels } from 'services/service';
+import { getAllChannels, getPage } from 'services/service';
 import { Content } from 'components';
 import { Box, Center, Spinner } from '@chakra-ui/react';
-import { Params, ContentItem } from 'types';
+import { Params, ContentItem, Page } from 'types';
 import { IMMORTAL_LOCATION } from 'utils/constants';
 
 function ExplorePage() {
   const { method, id, option } = useParams<Params>();
+  const [, browserDispatch] = useBrowserContext();
   const [page, setPage] = usePageContext();
-  const [, setChannel] = useChannelContext();
   const [{locked}] = usePlayerContext();
+
   useKeepStoreUpdatedWith(IMMORTAL_LOCATION, useLocation().pathname);
 
-  // TODO: should be refactored
   useEffect(() => {
-    if (option) {
-      getAllChannels(id).then(setPage);
-      return;
-    }
-
-    if (method === 'listen' && page && page.subtitle !== 'All Stations') {
-      const channelContextIndex = findChannelContextIndex(page.content, id);
-      if (typeof channelContextIndex === 'number') {
-        const context = channelsOnly(page.content[channelContextIndex].items);
-        getPageAndChannelState(id, context)
-          .then(res => !locked && setChannel(res.channel));
+    if (method === 'visit') {
+      if (option) {
+        getAllChannels(id).then(setPage);
         return;
       }
-    }
 
-    getPageAndChannelState(id).then(res => {
-      setPage(res.page);
-      !locked && setChannel(res.channel);
-    });
-  }, [method, id, option, setPage, setChannel]); // eslint-disable-line
+      getPage(id).then((res: Page) => {
+        const firstChannelId = getItemId(res.content[0].items[0]);
+        if (!locked) setChannelId(browserDispatch, firstChannelId);
+        setPage(res);
+      });
+    }
+  }, [method, option, id, setPage, locked, browserDispatch]);
+
+  useEffect(() => {
+    if (method === 'listen') {
+      if (!locked) setChannelId(browserDispatch, id);
+      if (page && page.subtitle !== 'All Stations') {
+        const channelContextIndex = findChannelContextIndex(page.content, id);
+        if (typeof channelContextIndex === 'number') return;
+      }
+      getPage(id).then(setPage);
+    }
+  }, [method, id, page, setPage, locked, browserDispatch]);
 
   if (!page) return (
     <Center h="100%">

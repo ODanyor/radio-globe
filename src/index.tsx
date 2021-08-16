@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { BrowserProvider } from 'services/browser';
 import { InterfaceProvider } from 'services/interface';
 import { PageProvider } from 'services/page';
 import { ChannelProvider } from 'services/channel';
@@ -16,17 +17,19 @@ ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider>
       <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <InterfaceProvider>
-            <PageProvider>
-              <ChannelProvider>
-                <PlayerProvider>
-                  <App />
-                </PlayerProvider>
-              </ChannelProvider>
-            </PageProvider>
-          </InterfaceProvider>
-        </QueryClientProvider>
+        <BrowserProvider>
+          <QueryClientProvider client={queryClient}>
+            <InterfaceProvider>
+              <PageProvider>
+                <ChannelProvider>
+                  <PlayerProvider>
+                    <App />
+                  </PlayerProvider>
+                </ChannelProvider>
+              </PageProvider>
+            </InterfaceProvider>
+          </QueryClientProvider>
+        </BrowserProvider>
       </BrowserRouter>
     </ChakraProvider>
   </React.StrictMode>,

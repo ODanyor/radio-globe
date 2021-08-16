@@ -1,12 +1,8 @@
-import { getPage, getChannel } from 'services/service';
 import { instanceOf } from 'utils/type';
 import {
   ContentItemListen,
   ContentItemPage,
-  Page,
-  ChannelItem,
   ContentItem,
-  PageAndChannelState
 } from 'types';
 
 function getItemId(item: ContentItemListen | ContentItemPage): string {
@@ -28,31 +24,12 @@ function findChannelContextIndex(content: ContentItem[], id: string): number | u
   }
 }
 
-export function channelsOnly(items: any[]) {
+function channelsOnly(items: any[]) {
   return items.filter(item => item.href);
 }
 
-const getPageAndChannelState = (id: string, context: any[] = []) =>
-  new Promise<PageAndChannelState>(async resolve => {
-  const result: any = { channel: {} };
-
-  if (!context.length) {
-    await getPage(id).then((res: Page) => {
-      result.page = res;
-      result.channel.context = channelsOnly(res.content[0].items);
-      id = getItemId(res.content[0].items[0]);
-    });
-  } else result.channel.context = context;
-
-  await getChannel(id).then((res: ChannelItem) => {
-    result.channel = { ...result.channel, ...res };
-  });
-
-  resolve(result);
-});
-
 export {
   getItemId,
-  getPageAndChannelState,
   findChannelContextIndex,
+  channelsOnly
 };

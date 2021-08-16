@@ -1,14 +1,16 @@
 import React, { createContext, useReducer, useContext } from 'react';
 import { ReactComponent } from 'types';
+import { getStored } from 'utils/store';
+import { IMMORTAL_CHANNEL_LOCKED, IMMORTAL_VOLUME, IMMORTAL_MUTED } from 'utils/constants';
 
 const PlayerContext = createContext({});
 
 const initialState = {
-  locked: false,
+  locked: getStored(IMMORTAL_CHANNEL_LOCKED) || false,
   playing: false,
   loading: false,
-  muted: false,
-  volume: 0.8,
+  muted: getStored(IMMORTAL_MUTED) || false,
+  volume: getStored(IMMORTAL_VOLUME) || 0.8,
   volumeSliderSupported: true,
 };
 

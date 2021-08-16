@@ -2,8 +2,12 @@ export type ReactComponent = {
   children: React.ReactNode;
 }
 
-export interface ChannelState extends ChannelItem {
+export interface ChannelState extends Channel {
   context: Array<ContentItemPage | ContentItemListen>;
+};
+
+export interface BrowserState {
+  channelId: string;
 };
 
 interface Identifier {
@@ -62,7 +66,7 @@ export interface ContentItem {
   rightAccessory?: 'chevron-right';
 };
 
-export interface ChannelItem extends Identifier {
+export interface Channel extends Identifier {
   country: Identifier;
   place: Identifier;
   secure: boolean;

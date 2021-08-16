@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
+import { useBrowserContext } from 'services/browser';
 import { useChannelContext } from 'services/channel';
-import { getStream } from 'services/service';
+import { usePageContext } from 'services/page';
+import { getChannel, getStream } from 'services/service';
 import { getStored } from 'utils/store';
+import { channelsOnly, findChannelContextIndex } from 'utils/data';
 import { useAudioPlayer } from 'hooks/useAudioPlayer';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import {
   IMMORTAL_VOLUME,
   IMMORTAL_MUTED,
-  IMMORTAL_CHANNEL_LOCKED
+  IMMORTAL_CHANNEL_LOCKED,
 } from 'utils/constants';
 import {
   Center,
@@ -43,10 +46,11 @@ import {
   setVolume,
   setMuted
 } from 'services/player';
-import { ContentItemListen } from 'types';
+import { Channel, ContentItemListen } from 'types';
 
 function Player() {
   const history = useHistory();
+  const [browser] = useBrowserContext();
   const [{navbarIsOpen}, interfaceDispatch] = useInterfaceContext();
   const [{
     locked,
@@ -56,14 +60,15 @@ function Player() {
     muted,
     volumeSliderSupported,
   }, playerDispatch] = usePlayerContext();
-  const [channel] = useChannelContext();
+  const [channel, setChannel] = useChannelContext();
+  const [page] = usePageContext();
   const [url, setUrl] = useState('');
-  
+
   useKeepStoreUpdatedWith(IMMORTAL_CHANNEL_LOCKED, locked);
   useKeepStoreUpdatedWith(IMMORTAL_MUTED, muted);
   useKeepStoreUpdatedWith(IMMORTAL_VOLUME, volume);
 
-  // DESC: setting up a cached values
+  // DESC: setting up cached values
   useEffect(() => {
     const storedMuted = getStored(IMMORTAL_MUTED);
     const storedVolume = getStored(IMMORTAL_VOLUME);
@@ -75,8 +80,19 @@ function Player() {
   }, [playerDispatch]);
 
   useEffect(() => {
-    if (channel.id) getStream(channel.id).then(setUrl);
-  }, [channel, playerDispatch]);
+    const channelId = browser.channelId;
+    if (channelId && page) {
+      const channelContextIndex = findChannelContextIndex(page.content, channelId);
+      if (typeof channelContextIndex === 'number') {
+        getStream(channelId).then(setUrl);
+        getChannel(channelId).then((res: Channel) =>
+          setChannel({ ...res, context: channelsOnly(page.content[channelContextIndex].items) }));
+      } else {
+        getStream(channelId).then(setUrl);
+        getChannel(channelId).then((res: Channel) => setChannel({ ...res, context: [] }));
+      }
+    }
+  }, [browser.channelId, page, setChannel]);
 
   function getVolumeIcon() {
     if (muted) return <FiVolumeX />;
@@ -175,7 +191,7 @@ function Player() {
           aria-label="play-toggle"
           icon={playing ? <FiSquare /> : <FiPlay />}
           onClick={() => setPlaying(playerDispatch, !playing)}
-          disabled={!channel.id || loading}
+          disabled={loading}
           isLoading={loading}
           borderRadius="100%"
           size="lg" />
