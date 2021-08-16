@@ -4,15 +4,17 @@ const cors = require('cors')
 
 const app = express();
 const port = 8000;
+const address = 'http://radio.garden/api/ara/content';
 
 app.use(cors());
 
+
 // Radio Garden API
-const getPlacesUrl = () => 'http://radio.garden/api/ara/content/places';
-const getChannelsUrl = (stationId) => `http://radio.garden/api/ara/content/page/${stationId}`;
-const getAllChannelsUrl = (stationId) => `http://radio.garden/api/ara/content/page/${stationId}/channels`;
-const getChannelUrl = (channelId) => `http://radio.garden/api/ara/content/channel/${channelId}`;
-const getStreamUrl = (channelId) => `http://radio.garden/api/ara/content/listen/${channelId}/channel.mp3`;
+const getPlacesUrl = () => `${address}/places`;
+const getChannelsUrl = (stationId) => `${address}/page/${stationId}`;
+const getAllChannelsUrl = (stationId) => `${address}/page/${stationId}/channels`;
+const getChannelUrl = (channelId) => `${address}/channel/${channelId}`;
+const getStreamUrl = (channelId) => `${address}/listen/${channelId}/channel.mp3`;
 
 app.get('/api/places', async function(req, res) {
   await axios.get(getPlacesUrl()).then(
