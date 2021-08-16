@@ -3,6 +3,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import { findChannelContextIndex, getItemId } from 'utils/data';
 import { useBrowserContext, setChannelId } from 'services/browser';
+import { useInterfaceContext, setLoading } from 'services/interface';
 import { usePlayerContext } from 'services/player';
 import { usePageContext } from 'services/page';
 import { getAllChannels, getPage } from 'services/service';
@@ -14,6 +15,7 @@ import { IMMORTAL_LOCATION } from 'utils/constants';
 function ExplorePage() {
   const { method, id, option } = useParams<Params>();
   const [, browserDispatch] = useBrowserContext();
+  const [{loading}, interfaceDispatch] = useInterfaceContext();
   const [page, setPage] = usePageContext();
   const [{locked}] = usePlayerContext();
 
@@ -21,8 +23,13 @@ function ExplorePage() {
 
   useEffect(() => {
     if (method === 'visit') {
+      setLoading(interfaceDispatch, true);
+
       if (option) {
-        getAllChannels(id).then(setPage);
+        getAllChannels(id).then((res: Page) => {
+          setPage(res);
+          setLoading(interfaceDispatch, false);
+        });
         return;
       }
 
@@ -30,9 +37,10 @@ function ExplorePage() {
         const firstChannelId = getItemId(res.content[0].items[0]);
         if (!locked) setChannelId(browserDispatch, firstChannelId);
         setPage(res);
+        setLoading(interfaceDispatch, false);
       });
     }
-  }, [method, option, id, setPage, locked, browserDispatch]);
+  }, [method, option, id, setPage, locked, browserDispatch, interfaceDispatch]);
 
   useEffect(() => {
     if (method === 'listen') {
@@ -41,11 +49,16 @@ function ExplorePage() {
         const channelContextIndex = findChannelContextIndex(page.content, id);
         if (typeof channelContextIndex === 'number') return;
       }
-      getPage(id).then(setPage);
-    }
-  }, [method, id, page, setPage, locked, browserDispatch]);
 
-  if (!page) return (
+      setLoading(interfaceDispatch, true);
+      getPage(id).then((res: Page) => {
+        setPage(res);
+        setLoading(interfaceDispatch, false);
+      });
+    }
+  }, [method, id, page, setPage, locked, browserDispatch, interfaceDispatch]);
+
+  if (loading || !page) return (
     <Center h="100%">
       <Spinner color="white" size="xl" />
     </Center>

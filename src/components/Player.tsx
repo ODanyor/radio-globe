@@ -83,14 +83,12 @@ function Player() {
     const channelId = browser.channelId;
     if (channelId && page) {
       const channelContextIndex = findChannelContextIndex(page.content, channelId);
-      if (typeof channelContextIndex === 'number') {
-        getStream(channelId).then(setUrl);
-        getChannel(channelId).then((res: Channel) =>
-          setChannel({ ...res, context: channelsOnly(page.content[channelContextIndex].items) }));
-      } else {
-        getStream(channelId).then(setUrl);
-        getChannel(channelId).then((res: Channel) => setChannel({ ...res, context: [] }));
-      }
+      getStream(channelId).then(setUrl);
+      getChannel(channelId).then((res: Channel) => {
+        if (typeof channelContextIndex === 'number')
+          setChannel({...res,  context: channelsOnly(page.content[channelContextIndex].items)});
+        else setChannel({...res, context: []});
+      });
     }
   }, [browser.channelId, page, setChannel]);
 
