@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useKeepLocationUpdated } from 'hooks/useKeepLocationUpdated';
+import { useParams, useLocation } from 'react-router-dom';
+import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import { getPageAndChannelState, findChannelContextIndex, channelsOnly } from 'utils/data';
 import { usePlayerContext } from 'services/player';
 import { usePageContext } from 'services/page';
@@ -9,14 +9,16 @@ import { getAllChannels } from 'services/service';
 import { Content } from 'components';
 import { Box, Center, Spinner } from '@chakra-ui/react';
 import { Params, ContentItem } from 'types';
+import { IMMORTAL_LOCATION } from 'utils/constants';
 
 function ExplorePage() {
   const { method, id, option } = useParams<Params>();
   const [page, setPage] = usePageContext();
   const [, setChannel] = useChannelContext();
   const [{locked}] = usePlayerContext();
-  useKeepLocationUpdated();
+  useKeepStoreUpdatedWith(IMMORTAL_LOCATION, useLocation().pathname);
 
+  // TODO: should be refactored
   useEffect(() => {
     if (option) {
       getAllChannels(id).then(setPage);

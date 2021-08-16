@@ -3,8 +3,9 @@ import { useHistory } from 'react-router-dom';
 import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useChannelContext } from 'services/channel';
 import { getStream } from 'services/service';
-import { getStored, setStored } from 'utils/store';
+import { getStored } from 'utils/store';
 import { useAudioPlayer } from 'hooks/useAudioPlayer';
+import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import {
   IMMORTAL_VOLUME,
   IMMORTAL_MUTED,
@@ -57,6 +58,10 @@ function Player() {
   }, playerDispatch] = usePlayerContext();
   const [channel] = useChannelContext();
   const [url, setUrl] = useState('');
+  
+  useKeepStoreUpdatedWith(IMMORTAL_CHANNEL_LOCKED, locked);
+  useKeepStoreUpdatedWith(IMMORTAL_MUTED, muted);
+  useKeepStoreUpdatedWith(IMMORTAL_VOLUME, volume);
 
   // DESC: setting up a cached values
   useEffect(() => {
@@ -105,18 +110,19 @@ function Player() {
     history.push(path);
   }
 
+  function handleFavorite() {
+    console.log(channel.id);
+  }
+
   function handleLocked() {
-    setStored(IMMORTAL_CHANNEL_LOCKED, !locked);
     setLocked(playerDispatch, !locked);
   }
 
   function handleMuted() {
-    setStored(IMMORTAL_MUTED, !muted);
     setMuted(playerDispatch, !muted);
   }
 
   function handleVolume(value: number) {
-    setStored(IMMORTAL_VOLUME, value);
     setVolume(playerDispatch, value);
   }
 
@@ -162,7 +168,7 @@ function Player() {
           aria-label="play-back"
           icon={<FiSkipBack />}
           onClick={playPrevious}
-          disabled={!channel.context.length}
+          disabled={!channel.context.length || channel.context.length === 1}
           borderRadius="100%"
           size="sm" />
         <IconButton
@@ -177,7 +183,7 @@ function Player() {
           aria-label="play-forward"
           icon={<FiSkipForward />}
           onClick={playNext}
-          disabled={!channel.context.length}
+          disabled={!channel.context.length || channel.context.length === 1}
           borderRadius="100%"
           size="sm" />
       </Flex>
@@ -185,6 +191,7 @@ function Player() {
       <IconButton
         aria-label="favorite"
         icon={<FiHeart />}
+        onClick={handleFavorite}
         disabled={!channel.id}
         borderRadius="100%"
         size="xs"
