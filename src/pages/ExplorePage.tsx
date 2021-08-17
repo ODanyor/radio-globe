@@ -8,14 +8,14 @@ import { usePlayerContext } from 'services/player';
 import { usePageContext } from 'services/page';
 import { getAllChannels, getPage } from 'services/service';
 import { Content } from 'components';
-import { Box, Center, Spinner } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { Params, ContentItem, Page } from 'types';
 import { IMMORTAL_LOCATION } from 'utils/constants';
 
 function ExplorePage() {
   const { method, id, option } = useParams<Params>();
   const [, browserDispatch] = useBrowserContext();
-  const [{loading}, interfaceDispatch] = useInterfaceContext();
+  const [, interfaceDispatch] = useInterfaceContext();
   const [page, setPage] = usePageContext();
   const [{locked}] = usePlayerContext();
 
@@ -45,7 +45,7 @@ function ExplorePage() {
   useEffect(() => {
     if (method === 'listen') {
       if (!locked) setChannelId(browserDispatch, id);
-      if (page && page.subtitle !== 'All Stations') {
+      if (page.map && page.subtitle !== 'All Stations') {
         const channelContextIndex = findChannelContextIndex(page.content, id);
         if (typeof channelContextIndex === 'number') return;
       }
@@ -57,12 +57,6 @@ function ExplorePage() {
       });
     }
   }, [method, id, page, setPage, locked, browserDispatch, interfaceDispatch]);
-
-  if (loading || !page) return (
-    <Center h="100%">
-      <Spinner color="white" size="xl" />
-    </Center>
-  );
 
   function getContent() {
     return page.content.map(
