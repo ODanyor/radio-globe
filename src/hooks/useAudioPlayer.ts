@@ -4,7 +4,7 @@ import { AudioPlayer } from 'types';
 export function useAudioPlayer({src, playing, muted, volume}: AudioPlayer) {
   const audio = useMemo(() => new Audio(), []);
 
-  useEffect(() => { audio.setAttribute('src', src) }, [audio, src]);
+  useEffect(() => { src && audio.setAttribute('src', src) }, [audio, src]);
   useEffect(() => {
     if (playing) {
       audio.load();
