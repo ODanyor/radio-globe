@@ -1,12 +1,14 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const router = express.Router();
 const app = express();
 
 const port = 8000;
 const address = 'http://radio.garden/api/ara/content';
 
+app.use(bodyParser.json());
 app.use(cors());
 
 // Radio Garden API
