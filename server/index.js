@@ -6,18 +6,19 @@ const router = express.Router();
 const app = express();
 
 const port = 8000;
-const address = 'http://radio.garden/api/ara/content';
+const address = 'http://radio.garden/api';
 
 app.use(bodyParser.json());
 app.use(cors());
 
 // Radio Garden API
-const getPlacesUrl = () => `${address}/places`;
-const getChannelsUrl = (stationId) => `${address}/page/${stationId}`;
-const getAllChannelsUrl = (stationId) => `${address}/page/${stationId}/channels`;
-const getChannelUrl = (channelId) => `${address}/channel/${channelId}`;
-const getStreamUrl = (channelId) => `${address}/listen/${channelId}/channel.mp3`;
-const getFavorites = () => `${address}/favorites`;
+const getPlacesUrl = () => `${address}/ara/content/places`;
+const getChannelsUrl = (stationId) => `${address}/ara/content/page/${stationId}`;
+const getAllChannelsUrl = (stationId) => `${address}/ara/content/page/${stationId}/channels`;
+const getChannelUrl = (channelId) => `${address}/ara/content/channel/${channelId}`;
+const getStreamUrl = (channelId) => `${address}/ara/content/listen/${channelId}/channel.mp3`;
+const getFavorites = () => `${address}/ara/content/favorites`;
+const getSearch = (query) => `${address}/search?q=${query}`;
 
 router.get('/api/places', async function(req, res) {
   await axios.get(getPlacesUrl()).then(
@@ -53,6 +54,13 @@ router.get('/api/listen/:channelId', async function(req, res) {
 router.post('/api/favorites', async function(req, res) {
   const favorites = req.body.favorites;
   await axios.post(getFavorites(), {favorites}).then(
+    ({data}) => res.send(data),
+    (error) => res.status(500).send(error)
+  );
+});
+router.get('/api/search', async function(req, res) {
+  const { query } = req.query;
+  await axios.get(getSearch(query)).then(
     ({data}) => res.send(data),
     (error) => res.status(500).send(error)
   );
