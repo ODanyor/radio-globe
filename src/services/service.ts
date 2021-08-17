@@ -38,10 +38,16 @@ function getStream(id: string) {
   return client(`listen/${id}`).then(handleSuccess)
 }
 
+function getFavorites(favorites: string[]) {
+  return client(`favorites`, {method: 'POST', body: JSON.stringify({favorites})})
+    .then(handleSuccess);
+}
+
 export {
   getPlaces,
   getPage,
   getChannel,
   getAllChannels,
   getStream,
+  getFavorites,
 };

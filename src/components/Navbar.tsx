@@ -1,6 +1,6 @@
 import Routes from 'App/Routes';
 import { Link as ReachLink } from 'react-router-dom';
-import { Box, Flex, LinkBox, Center, Icon, Text } from '@chakra-ui/react';
+import { Box, Flex, LinkBox, Center, Icon, Text, Spinner } from '@chakra-ui/react';
 import { useInterfaceContext } from 'services/interface';
 import { FiGlobe, FiHeart, FiSearch } from 'react-icons/fi';
 
@@ -28,7 +28,7 @@ function NavbarLink({to, icon, label}: any) {
 }
 
 function Navbar() {
-  const [{navbarIsOpen}] = useInterfaceContext();
+  const [{navbarIsOpen, loading}] = useInterfaceContext();
 
   function getLinks() {
     return navbarLinks.map((link, index) => <NavbarLink key={index} {...link} />)
@@ -49,7 +49,12 @@ function Navbar() {
         overflowY="scroll"
         flexDir="column"
         bgColor="rgb(15 78 108 / 85%)">
-        <Box flex="1">
+        {loading && (
+          <Center flex="1" h="100%">
+            <Spinner color="white" size="xl" />
+          </Center>
+        )}
+        <Box flex="1" display={loading && 'none'}>
           <Routes />
         </Box>
         <Flex

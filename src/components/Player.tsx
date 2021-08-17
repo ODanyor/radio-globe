@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
-import { useBrowserContext } from 'services/browser';
+import { useBrowserContext, setFavorite, unsetFavorite } from 'services/browser';
 import { useChannelContext } from 'services/channel';
 import { usePageContext } from 'services/page';
 import { getChannel, getStream } from 'services/service';
@@ -50,7 +50,7 @@ import { Channel, ContentItemListen } from 'types';
 
 function Player() {
   const history = useHistory();
-  const [browser] = useBrowserContext();
+  const [browser, browserDispatch] = useBrowserContext();
   const [{navbarIsOpen}, interfaceDispatch] = useInterfaceContext();
   const [{
     locked,
@@ -63,6 +63,7 @@ function Player() {
   const [channel, setChannel] = useChannelContext();
   const [page] = usePageContext();
   const [url, setUrl] = useState('');
+  const isFavorited = browser.favorites.some((favorite: string) => favorite === channel.id);
 
   useKeepStoreUpdatedWith(IMMORTAL_CHANNEL_LOCKED, locked);
   useKeepStoreUpdatedWith(IMMORTAL_MUTED, muted);
@@ -81,7 +82,7 @@ function Player() {
 
   useEffect(() => {
     const channelId = browser.channelId;
-    if (channelId && page) {
+    if (channelId && page.map) {
       const channelContextIndex = findChannelContextIndex(page.content, channelId);
       getStream(channelId).then(setUrl);
       getChannel(channelId).then((res: Channel) => {
@@ -125,7 +126,8 @@ function Player() {
   }
 
   function handleFavorite() {
-    console.log(channel.id);
+    if (isFavorited) unsetFavorite(browserDispatch, channel.id);
+    else setFavorite(browserDispatch, channel.id);
   }
 
   function handleLocked() {
@@ -141,7 +143,7 @@ function Player() {
   }
 
   const { onLoadStart, onLoadedData } = useAudioPlayer({src: url, playing, muted, volume});
-  onLoadStart(()=> setLoading(playerDispatch, true));
+  onLoadStart(() => setLoading(playerDispatch, true));
   onLoadedData(() => setLoading(playerDispatch, false));
 
   return (
@@ -189,7 +191,7 @@ function Player() {
           aria-label="play-toggle"
           icon={playing ? <FiSquare /> : <FiPlay />}
           onClick={() => setPlaying(playerDispatch, !playing)}
-          disabled={loading}
+          disabled={loading || !url}
           isLoading={loading}
           borderRadius="100%"
           size="lg" />
@@ -204,7 +206,7 @@ function Player() {
 
       <IconButton
         aria-label="favorite"
-        icon={<FiHeart />}
+        icon={<FiHeart fill={isFavorited ? 'black' : 'transparent'} />}
         onClick={handleFavorite}
         disabled={!channel.id}
         borderRadius="100%"

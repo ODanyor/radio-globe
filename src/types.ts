@@ -8,6 +8,7 @@ export interface ChannelState extends Channel {
 
 export interface BrowserState {
   channelId: string;
+  favorites: string[];
 };
 
 interface Identifier {

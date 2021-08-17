@@ -18,6 +18,7 @@ function Content({ content }: ContentProps) {
         path = item.page.url;
         subtitle = item.page.subtitle;
       }
+      if (item.url) path = item.url;
       
       return (
         <Link key={index} to={path}>
@@ -31,7 +32,7 @@ function Content({ content }: ContentProps) {
   }
 
   return (
-    <Box _notLast={{ marginBottom: '3rem' }}>
+    <Box color="white" _notLast={{ marginBottom: '3rem' }}>
       {option &&
         <Button
           bg="#000011"

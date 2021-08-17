@@ -1,16 +1,37 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useReducer, useContext } from 'react';
 import { ReactComponent, BrowserState } from 'types';
-import { IMMORTAL_CHANNEL } from 'utils/constants';
+import { IMMORTAL_CHANNEL, IMMORTAL_FAVORITES } from 'utils/constants';
 import { getStored, setStored } from 'utils/store';
 
 const BrowserContext = createContext({});
 
-const initialBrowserState = {
+const initialBrowserState: BrowserState = {
   channelId: getStored(IMMORTAL_CHANNEL) || '',
+  favorites: getStored(IMMORTAL_FAVORITES) || [],
 };
 
+function browserReducer(state: any, action: any) {
+  switch(action.type) {
+    case 'SET_CHANNEL_ID':
+      setStored(IMMORTAL_CHANNEL, action.payload);
+      return { ...state, channelId: action.payload };
+    case 'SET_FAVORITE': {
+      const updatedFavorites = [...state.favorites, action.payload];
+      setStored(IMMORTAL_FAVORITES, updatedFavorites);
+      return { ...state, favorites: updatedFavorites};
+    }
+    case 'UNSET_FAVORITE': {
+      const updatedFavorites = state.favorites.filter((fav: string) => fav !== action.payload);
+      setStored(IMMORTAL_FAVORITES, updatedFavorites);
+      return { ...state, favorites: updatedFavorites};
+    }
+    default:
+      throw new Error(`Unhandled action type: ${action.type}`);
+  }
+}
+
 function BrowserProvider({ children }: ReactComponent) {
-  const [state, dispatch] = useState<BrowserState>(initialBrowserState);
+  const [state, dispatch] = useReducer(browserReducer, initialBrowserState);
 
   return (
     <BrowserContext.Provider value={[state, dispatch]}>
@@ -26,12 +47,21 @@ function useBrowserContext() {
 }
 
 function setChannelId(dispatch: React.Dispatch<any>, value: string) {
-  setStored(IMMORTAL_CHANNEL, value);
-  dispatch((state: any) => dispatch({ ...state, channelId: value }));
+  dispatch({ type: 'SET_CHANNEL_ID', payload: value });
+}
+
+function setFavorite(dispatch: React.Dispatch<any>, value: string) {
+  dispatch({ type: 'SET_FAVORITE', payload: value });
+}
+
+function unsetFavorite(dispatch: React.Dispatch<any>, value: string) {
+  dispatch({ type: 'UNSET_FAVORITE', payload: value });
 }
 
 export {
   BrowserProvider,
   useBrowserContext,
-  setChannelId
+  setChannelId,
+  setFavorite,
+  unsetFavorite
 };
