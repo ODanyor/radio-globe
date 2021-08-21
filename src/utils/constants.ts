@@ -5,3 +5,4 @@ export const IMMORTAL_VOLUME = '_immortal|volume';
 export const IMMORTAL_MUTED = '_immortal|muted';
 export const IMMORTAL_LOCATION = '_immortal|location';
 export const IMMORTAL_FAVORITES = '_immortal|favorites';
+export const IMMORTAL_QUERY = '_immortal|query';

@@ -1,5 +1,6 @@
 import client from 'utils/client';
 import { PlaceOrigin, Place } from 'types';
+import { abortableFetch } from 'utils/client';
 
 async function handleSuccess(response: Response) {
   const { data } = await response.json();
@@ -7,7 +8,7 @@ async function handleSuccess(response: Response) {
 }
 
 function getPlaces() {
-  // DESC: transforming data structure to suit Globe component
+  // DESC: transforming data structure to fit Globe component
   async function handleSuccess(response: Response) {
     const { data: { list } } = await response.json();
     const fetchedPlaces: Place[] = list.map((item: PlaceOrigin) => {
@@ -43,6 +44,20 @@ function getFavorites(favorites: string[]) {
     .then(handleSuccess);
 }
 
+function search(query: string) {
+  const { ready, abort } = abortableFetch(`search?query=${query}`);
+
+  async function handleSuccess(response: Response) {
+    const data = await response.json();
+    return data;
+  }
+  
+  return {
+    ready: ready.then(handleSuccess),
+    abort,
+  };
+}
+
 export {
   getPlaces,
   getPage,
@@ -50,4 +65,5 @@ export {
   getAllChannels,
   getStream,
   getFavorites,
+  search,
 };
