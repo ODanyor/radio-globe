@@ -13,10 +13,6 @@ function SearchPage() {
 
   useKeepStoreUpdatedWith(IMMORTAL_QUERY, query);
 
-  useEffect(() => {
-    if (storedQuery) setQuery(storedQuery);
-  }, [storedQuery, setQuery]);
-
   function handleQuery(event: React.ChangeEvent<HTMLInputElement>) {
     setQuery(event.target.value.toLowerCase());
   }

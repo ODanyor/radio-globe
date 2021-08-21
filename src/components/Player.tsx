@@ -5,7 +5,6 @@ import { useBrowserContext, setFavorite, unsetFavorite } from 'services/browser'
 import { useChannelContext } from 'services/channel';
 import { usePageContext } from 'services/page';
 import { getChannel, getStream } from 'services/service';
-import { getStored } from 'utils/store';
 import { channelsOnly, findChannelContextIndex } from 'utils/data';
 import { useAudioPlayer } from 'hooks/useAudioPlayer';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
@@ -68,17 +67,6 @@ function Player() {
   useKeepStoreUpdatedWith(IMMORTAL_CHANNEL_LOCKED, locked);
   useKeepStoreUpdatedWith(IMMORTAL_MUTED, muted);
   useKeepStoreUpdatedWith(IMMORTAL_VOLUME, volume);
-
-  // DESC: setting up cached values
-  useEffect(() => {
-    const storedMuted = getStored(IMMORTAL_MUTED);
-    const storedVolume = getStored(IMMORTAL_VOLUME);
-    const storedLocked = getStored(IMMORTAL_CHANNEL_LOCKED);
-
-    if (storedMuted) setMuted(playerDispatch, storedMuted);
-    if (storedVolume) setVolume(playerDispatch, storedVolume);
-    if (storedLocked) setLocked(playerDispatch, storedLocked);
-  }, [playerDispatch]);
 
   useEffect(() => {
     const channelId = browser.channelId;
