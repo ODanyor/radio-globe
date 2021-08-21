@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 import { getStored } from 'utils/store';
 import { IMMORTAL_FAVORITES } from 'utils/constants';
 import { getFavorites } from 'services/service';
@@ -12,6 +12,7 @@ function FavoritesPage() {
   
   useEffect(() => {
     const storedFavorites = getStored(IMMORTAL_FAVORITES);
+    if (!storedFavorites) return;
     setLoading(interfaceDispatch, true);
     getFavorites(storedFavorites).then(res => {
       setFavorites(res);
@@ -27,6 +28,7 @@ function FavoritesPage() {
           type: 'list',
           items: favorites,
         }} />
+      {!favorites.length && <Text>Here will be appeared stations you've liked</Text>}
     </Box>
   );
 }
