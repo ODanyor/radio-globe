@@ -13,4 +13,14 @@ function client(url: string, options = {}) {
   return fetch(`${stand}/${url}`, {...options, ...defaults});
 }
 
+export function abortableFetch(request: string, opts = {}) {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  return {
+    ready: client(request, { ...opts, signal }),
+    abort: () => controller.abort(),
+  };
+}
+
 export default client;
