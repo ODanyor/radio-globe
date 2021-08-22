@@ -5,32 +5,29 @@ import { search } from 'services/service';
 import { getStored } from 'utils/store';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import { IMMORTAL_QUERY } from 'utils/constants';
-// import { useDebounce } from 'hooks/useDebounce';
+import { useDebounce } from 'hooks/useDebounce';
 
 function SearchPage() {
-  const storedQuery = useMemo(() => getStored(IMMORTAL_QUERY), []);
+  const storedQuery = useMemo<string>(() => getStored(IMMORTAL_QUERY), []);
   const [query, setQuery] = useState(storedQuery ? storedQuery : '');
   const [result, setResult] = useState([]);
+  const debouncedQuery = useDebounce(query);
 
-  useKeepStoreUpdatedWith(IMMORTAL_QUERY, query);
+  useKeepStoreUpdatedWith(IMMORTAL_QUERY, debouncedQuery);
 
   function handleQuery(event: React.ChangeEvent<HTMLInputElement>) {
     setQuery(event.target.value.toLowerCase());
   }
 
-  // TODO: request with useDebounce
-  // const memoizedSearchValue = useMemo(() => search(`search?query=${query}`), [query]);
-  // const debouncedSearch = useDebounce(memoizedSearchValue, 1000);
-
   useEffect(() => {
-    const { ready, abort } = search(`search?query=${query}`);
+    const { ready, abort } = search(`search?query=${debouncedQuery}`);
     ready.then((res: any) => {
       const { hits: { hits } } = res;
       const result = hits.map((hit: any) => hit._source);
       setResult(result);
     }).catch(() => null);
     return () => abort();
-  }, [query]);
+  }, [debouncedQuery]);
 
   return (
     <Box color="white" padding="1rem">
