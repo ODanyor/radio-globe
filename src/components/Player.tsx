@@ -43,7 +43,8 @@ import {
   setPlaying,
   setLoading,
   setVolume,
-  setMuted
+  setMuted,
+  setVolumeSliderSupported
 } from 'services/player';
 import { Channel, ContentItemListen } from 'types';
 
@@ -63,6 +64,16 @@ function Player() {
   const [page] = usePageContext();
   const [url, setUrl] = useState('');
   const isFavorited = browser.favorites.some((favorite: string) => favorite === channel.id);
+
+  // TODO: resize with useThrottle
+  useEffect(() => {
+    function handleVolumeSliderSupported() {
+      if (window.innerWidth < 1000) setVolumeSliderSupported(playerDispatch, false);
+      else setVolumeSliderSupported(playerDispatch, true);
+    }
+    window.addEventListener('resize', handleVolumeSliderSupported);
+    return () => window.removeEventListener('resize', handleVolumeSliderSupported);
+  }, [playerDispatch]);
 
   useKeepStoreUpdatedWith(IMMORTAL_CHANNEL_LOCKED, locked);
   useKeepStoreUpdatedWith(IMMORTAL_MUTED, muted);

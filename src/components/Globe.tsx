@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import Globe from 'react-globe.gl';
 import { useHistory } from 'react-router-dom';
 import { getPlaces } from 'services/service';
@@ -7,13 +7,13 @@ import globeImage from 'assets/images/earth-night.jpeg';
 
 function GlobeComponent() {
   const history = useHistory();
-  const [places, setPlaces] = React.useState<Place[]>([]);
+  const [places, setPlaces] = useState<Place[]>([]);
 
   function handlePointClick(point: Place) {
     history.push(point.url);
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     getPlaces().then((list) => setPlaces(list));
   }, []);
 
