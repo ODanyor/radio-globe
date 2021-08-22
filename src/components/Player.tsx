@@ -7,6 +7,7 @@ import { usePageContext } from 'services/page';
 import { getChannel, getStream } from 'services/service';
 import { channelsOnly, findChannelContextIndex } from 'utils/data';
 import { useAudioPlayer } from 'hooks/useAudioPlayer';
+import { useDebounce } from 'hooks/useDebounce';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import {
   IMMORTAL_VOLUME,
@@ -75,9 +76,13 @@ function Player() {
     return () => window.removeEventListener('resize', handleVolumeSliderSupported);
   }, [playerDispatch]);
 
-  useKeepStoreUpdatedWith(IMMORTAL_CHANNEL_LOCKED, locked);
-  useKeepStoreUpdatedWith(IMMORTAL_MUTED, muted);
-  useKeepStoreUpdatedWith(IMMORTAL_VOLUME, volume);
+  const debouncedLocked = useDebounce(locked);
+  const debouncedMuted = useDebounce(muted);
+  const debouncedVolume = useDebounce(volume);
+
+  useKeepStoreUpdatedWith(IMMORTAL_CHANNEL_LOCKED, debouncedLocked);
+  useKeepStoreUpdatedWith(IMMORTAL_MUTED, debouncedMuted);
+  useKeepStoreUpdatedWith(IMMORTAL_VOLUME, debouncedVolume);
 
   useEffect(() => {
     const channelId = browser.channelId;
