@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Globe from 'react-globe.gl';
 import { useHistory } from 'react-router-dom';
+import { useWindowSize } from 'hooks/useWindowSize';
 import { getPlaces } from 'services/service';
 import { Place } from 'types';
 import globeImage from 'assets/images/earth-night.jpeg';
@@ -8,6 +9,7 @@ import globeImage from 'assets/images/earth-night.jpeg';
 function GlobeComponent() {
   const history = useHistory();
   const [places, setPlaces] = useState<Place[]>([]);
+  const {width, height}= useWindowSize();
 
   function handlePointClick(place: object) {
     // @ts-ignore
@@ -20,6 +22,8 @@ function GlobeComponent() {
 
   return (
     <Globe
+      width={width}
+      height={height}
       globeImageUrl={globeImage}
       backgroundColor="#00000000" // transparent
       pointsData={places}
