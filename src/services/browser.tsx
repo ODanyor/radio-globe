@@ -1,16 +1,24 @@
 import React, { createContext, useReducer, useContext } from 'react';
-import { ReactComponent, BrowserState } from 'types';
+import { ReactComponent, BrowserState, Action } from 'types';
 import { IMMORTAL_CHANNEL, IMMORTAL_FAVORITES } from 'utils/constants';
 import { getStored, setStored } from 'utils/store';
 
 const BrowserContext = createContext({});
 
 const initialBrowserState: BrowserState = {
-  channelId: getStored(IMMORTAL_CHANNEL) || '',
-  favorites: getStored(IMMORTAL_FAVORITES) || [],
+  channelId: '',
+  favorites: [],
 };
 
-function browserReducer(state: any, action: any) {
+function browserInitializer(initialState: BrowserState) {
+  return {
+    ...initialState,
+    channelId: getStored(IMMORTAL_CHANNEL) || '',
+    favorites: getStored(IMMORTAL_FAVORITES) || [],
+  };
+}
+
+function browserReducer(state: BrowserState, action: Action) {
   switch(action.type) {
     case 'SET_CHANNEL_ID':
       setStored(IMMORTAL_CHANNEL, action.payload);
@@ -31,7 +39,7 @@ function browserReducer(state: any, action: any) {
 }
 
 function BrowserProvider({ children }: ReactComponent) {
-  const [state, dispatch] = useReducer(browserReducer, initialBrowserState);
+  const [state, dispatch] = useReducer(browserReducer, initialBrowserState, browserInitializer);
 
   return (
     <BrowserContext.Provider value={[state, dispatch]}>
@@ -46,15 +54,15 @@ function useBrowserContext() {
   return context;
 }
 
-function setChannelId(dispatch: React.Dispatch<any>, value: string) {
+function setChannelId(dispatch: React.Dispatch<Action>, value: string) {
   dispatch({ type: 'SET_CHANNEL_ID', payload: value });
 }
 
-function setFavorite(dispatch: React.Dispatch<any>, value: string) {
+function setFavorite(dispatch: React.Dispatch<Action>, value: string) {
   dispatch({ type: 'SET_FAVORITE', payload: value });
 }
 
-function unsetFavorite(dispatch: React.Dispatch<any>, value: string) {
+function unsetFavorite(dispatch: React.Dispatch<Action>, value: string) {
   dispatch({ type: 'UNSET_FAVORITE', payload: value });
 }
 

@@ -1,20 +1,29 @@
 import React, { createContext, useReducer, useContext } from 'react';
-import { ReactComponent } from 'types';
+import { ReactComponent, PlayerState, Action } from 'types';
 import { getStored } from 'utils/store';
 import { IMMORTAL_CHANNEL_LOCKED, IMMORTAL_VOLUME, IMMORTAL_MUTED } from 'utils/constants';
 
 const PlayerContext = createContext({});
 
-const initialState = {
-  locked: getStored(IMMORTAL_CHANNEL_LOCKED) || false,
+const initialPlayerState: PlayerState = {
+  locked: false,
   playing: false,
   loading: false,
-  muted: getStored(IMMORTAL_MUTED) || false,
-  volume: getStored(IMMORTAL_VOLUME) || 0.8,
+  muted: false,
+  volume: 0.8,
   volumeSliderSupported: true,
 };
 
-function playerReducer(state: any, action: any) {
+function playerInitializer(initialPlayerState: PlayerState) {
+  return {
+    ...initialPlayerState,
+    locked: getStored(IMMORTAL_CHANNEL_LOCKED) || false,
+    muted: getStored(IMMORTAL_MUTED) || false,
+    volume: getStored(IMMORTAL_VOLUME) || 0.8,
+  };
+}
+
+function playerReducer(state: PlayerState, action: Action) {
   switch(action.type) {
     case 'SET_LOCKED':
       return { ...state, locked: action.payload };
@@ -34,7 +43,7 @@ function playerReducer(state: any, action: any) {
 }
 
 function PlayerProvider({ children }: ReactComponent) {
-  const [state, dispatch] = useReducer(playerReducer, initialState);
+  const [state, dispatch] = useReducer(playerReducer, initialPlayerState, playerInitializer);
 
   return (
     <PlayerContext.Provider value={[state, dispatch]}>
@@ -49,22 +58,22 @@ function usePlayerContext() {
   return context;
 }
 
-function setLocked(dispatch: React.Dispatch<any>, value: boolean) {
+function setLocked(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_LOCKED', payload: value })
 }
-function setPlaying(dispatch: React.Dispatch<any>, value: boolean) {
+function setPlaying(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_PLAYING', payload: value })
 }
-function setLoading(dispatch: React.Dispatch<any>, value: boolean) {
+function setLoading(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_LOADING', payload: value })
 }
-function setMuted(dispatch: React.Dispatch<any>, value: boolean) {
+function setMuted(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_MUTED', payload: value });
 }
-function setVolume(dispatch: React.Dispatch<any>, value: number) {
+function setVolume(dispatch: React.Dispatch<Action>, value: number) {
   dispatch({ type: 'SET_VOLUME', payload: value })
 }
-function setVolumeSliderSupported(dispatch: React.Dispatch<any>, value: boolean) {
+function setVolumeSliderSupported(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_VOLUME-SLIDER-SUPPORTED', payload: value })
 }
 

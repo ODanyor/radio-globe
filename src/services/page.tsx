@@ -1,14 +1,14 @@
 import { createContext, useState, useContext } from 'react';
-import { ReactComponent } from 'types';
+import { ReactComponent, PageState } from 'types';
 
 const PageContext = createContext({});
 
-const initialPageState = {
-  map: undefined,
-  url: undefined,
-  count: null,
-  title: undefined,
-  subtitle: undefined,
+const initialPageState: PageState = {
+  map: '',
+  url: '',
+  count: 0,
+  title: '',
+  subtitle: '',
   content: []
 };
 

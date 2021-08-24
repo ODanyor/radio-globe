@@ -3,7 +3,7 @@ import { ReactComponent, ChannelState } from 'types';
 
 const ChannelContext = createContext({});
 
-const initialChannelState = {
+const initialChannelState: ChannelState = {
   context: [],
   country: {id: '', title: ''},
   id: '',

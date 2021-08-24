@@ -1,15 +1,15 @@
 import React, { createContext, useReducer, useContext } from 'react';
-import { ReactComponent } from 'types';
+import { ReactComponent, InterfaceState, Action } from 'types';
 
 const InterfaceContext = createContext({});
 
-const initialState = {
+const initialInterfaceState: InterfaceState = {
   loading: false,
   error: null,
   navbarIsOpen: false,
 };
 
-function interfaceReducer(state: any, action: any) {
+function interfaceReducer(state: InterfaceState, action: Action) {
   switch(action.type) {
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
@@ -23,7 +23,7 @@ function interfaceReducer(state: any, action: any) {
 }
 
 function InterfaceProvider({ children }: ReactComponent) {
-  const [state, dispatch] = useReducer(interfaceReducer, initialState);
+  const [state, dispatch] = useReducer(interfaceReducer, initialInterfaceState);
 
   return (
     <InterfaceContext.Provider value={[state, dispatch]}>
@@ -38,13 +38,13 @@ function useInterfaceContext() {
   return context;
 }
 
-function setLoading(dispatch: React.Dispatch<any>, value: boolean) {
+function setLoading(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_LOADING', payload: value })
 }
-function setError(dispatch: React.Dispatch<any>, value: boolean) {
+function setError(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_ERROR', payload: value })
 }
-function setNavberIsOpen(dispatch: React.Dispatch<any>, value: boolean) {
+function setNavberIsOpen(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_NAVBAR-IS-OPEN', payload: value })
 }
 
