@@ -1,9 +1,12 @@
-import { instanceOf } from 'utils/type';
 import {
   ContentItemListen,
   ContentItemPage,
   ContentItem,
 } from 'types';
+
+function instanceOf<T>(object: any, key: string): object is T {
+  return key in object;
+}
 
 function getItemId(item: ContentItemListen | ContentItemPage): string {
   let path;
@@ -29,6 +32,7 @@ function channelsOnly(items: any[]) {
 }
 
 export {
+  instanceOf,
   getItemId,
   findChannelContextIndex,
   channelsOnly
