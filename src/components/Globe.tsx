@@ -9,8 +9,9 @@ function GlobeComponent() {
   const history = useHistory();
   const [places, setPlaces] = useState<Place[]>([]);
 
-  function handlePointClick(point: Place) {
-    history.push(point.url);
+  function handlePointClick(place: object) {
+    // @ts-ignore
+    history.push(place.url);
   }
 
   useEffect(() => {
@@ -26,7 +27,6 @@ function GlobeComponent() {
       pointAltitude={0}
       pointRadius={0.20}
       pointResolution={6}
-      // @ts-ignore
       onPointClick={handlePointClick}
     />
   );
