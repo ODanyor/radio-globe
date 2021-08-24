@@ -10,7 +10,7 @@ import { getAllChannels, getPage } from 'services/service';
 import { Content } from 'components';
 import { Box } from '@chakra-ui/react';
 import { Params, ContentItem, Page } from 'types';
-import { IMMORTAL_LOCATION } from 'utils/constants';
+import { IMMORTAL_LOCATION, METHOD_VISIT, METHOD_LISTEN, ALL_STATIONS } from 'utils/constants';
 
 function ExplorePage() {
   const { method, id, option } = useParams<Params>();
@@ -22,7 +22,7 @@ function ExplorePage() {
   useKeepStoreUpdatedWith(IMMORTAL_LOCATION, useLocation().pathname);
 
   useEffect(() => {
-    if (method === 'visit') {
+    if (method === METHOD_VISIT) {
       setLoading(interfaceDispatch, true);
 
       if (option) {
@@ -43,9 +43,9 @@ function ExplorePage() {
   }, [method, option, id, setPage, locked, browserDispatch, interfaceDispatch]);
 
   useEffect(() => {
-    if (method === 'listen') {
+    if (method === METHOD_LISTEN) {
       if (!locked) setChannelId(browserDispatch, id);
-      if (page.map && page.subtitle !== 'All Stations') {
+      if (page.map && page.subtitle !== ALL_STATIONS) {
         const channelContextIndex = findChannelContextIndex(page.content, id);
         if (typeof channelContextIndex === 'number') return;
       }
