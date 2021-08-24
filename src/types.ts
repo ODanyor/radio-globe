@@ -1,15 +1,37 @@
-export type ReactComponent = {
+export interface ReactComponent {
   children: React.ReactNode;
-}
+};
+
+export interface Action {
+  type: string;
+  payload: any;
+};
 
 export interface ChannelState extends Channel {
   context: Array<ContentItemPage | ContentItemListen>;
+};
+
+export interface PlayerState {
+  locked: boolean,
+  playing: boolean,
+  loading: boolean,
+  muted: boolean,
+  volume: number,
+  volumeSliderSupported: boolean,
 };
 
 export interface BrowserState {
   channelId: string;
   favorites: string[];
 };
+
+export interface InterfaceState {
+  loading: boolean,
+  error: any,
+  navbarIsOpen: boolean,
+};
+
+export interface PageState extends Page {};
 
 interface Identifier {
   id: string;
