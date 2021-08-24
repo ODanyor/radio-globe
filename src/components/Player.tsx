@@ -8,6 +8,7 @@ import { getChannel, getStream } from 'services/service';
 import { channelsOnly, findChannelContextIndex } from 'utils/data';
 import { useAudioPlayer } from 'hooks/useAudioPlayer';
 import { useDebounce } from 'hooks/useDebounce';
+import { useWindowSize } from 'hooks/useWindowSize';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import {
   IMMORTAL_VOLUME,
@@ -51,6 +52,7 @@ import { Channel, ContentItemListen } from 'types';
 
 function Player() {
   const history = useHistory();
+  const windowSize = useWindowSize();
   const [browser, browserDispatch] = useBrowserContext();
   const [{navbarIsOpen}, interfaceDispatch] = useInterfaceContext();
   const [{
@@ -66,15 +68,10 @@ function Player() {
   const [url, setUrl] = useState('');
   const isFavorited = browser.favorites.some((favorite: string) => favorite === channel.id);
 
-  // TODO: resize with useThrottle
   useEffect(() => {
-    function handleVolumeSliderSupported() {
-      if (window.innerWidth < 1000) setVolumeSliderSupported(playerDispatch, false);
-      else setVolumeSliderSupported(playerDispatch, true);
-    }
-    window.addEventListener('resize', handleVolumeSliderSupported);
-    return () => window.removeEventListener('resize', handleVolumeSliderSupported);
-  }, [playerDispatch]);
+    if (window.innerWidth < 1000) setVolumeSliderSupported(playerDispatch, false);
+    else setVolumeSliderSupported(playerDispatch, true);
+  }, [windowSize, playerDispatch]);
 
   const debouncedLocked = useDebounce(locked);
   const debouncedMuted = useDebounce(muted);
