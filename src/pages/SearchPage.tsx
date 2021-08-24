@@ -32,6 +32,7 @@ function SearchPage() {
   return (
     <Box color="white" padding="1rem">
       <Input
+        autoFocus
         value={query}
         onChange={handleQuery}
         type="text"
