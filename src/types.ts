@@ -18,6 +18,7 @@ export interface PlayerState {
   muted: boolean,
   volume: number,
   volumeSliderSupported: boolean,
+  url: string;
 };
 
 export interface BrowserState {
@@ -77,6 +78,14 @@ export interface ContentItemPage {
   rightDetail?: string;
   leftAccessory?: 'chevron-left';
   leftAccessoryCount?: number;
+};
+
+export interface ContentItemSearch {
+  code: string;
+  subtitle: string;
+  title: string;
+  type: string;
+  url: string;
 };
 
 export interface ContentItem {

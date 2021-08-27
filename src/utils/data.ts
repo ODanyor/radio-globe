@@ -1,6 +1,7 @@
 import {
   ContentItemListen,
   ContentItemPage,
+  ContentItemSearch,
   ContentItem,
 } from 'types';
 
@@ -8,10 +9,11 @@ function instanceOf<T>(object: any, key: string): object is T {
   return key in object;
 }
 
-function getItemId(item: ContentItemListen | ContentItemPage): string {
+function getItemId(item: ContentItemListen | ContentItemPage | ContentItemSearch): string {
   let path;
   if (instanceOf<ContentItemListen>(item, 'href')) path = item.href;
   else if (instanceOf<ContentItemPage>(item, 'page')) path = item.page.url;
+  else if (instanceOf<ContentItemListen>(item, 'url')) path = item.url;
   else throw new Error('Undefined item type in getItemId function.');
 
   const parsedPath = path.split('/');
