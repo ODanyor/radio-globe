@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import Globe from 'react-globe.gl';
+import { useEffect, useState, useRef } from 'react';
+import Globe, { GlobeMethods } from 'react-globe.gl';
 import { useHistory } from 'react-router-dom';
 import { useWindowSize } from 'hooks/useWindowSize';
 import { getPlaces } from 'services/service';
@@ -10,10 +10,14 @@ function GlobeComponent() {
   const history = useHistory();
   const [places, setPlaces] = useState<Place[]>([]);
   const {width, height}= useWindowSize();
+  const globeRef = useRef<GlobeMethods>();
 
   function handlePointClick(place: object) {
     // @ts-ignore
     history.push(place.url);
+    // // @ts-ignore
+    // const { lat, lng } = place;
+    // globeRef.current?.toGlobeCoords(lat, lng);
   }
 
   useEffect(() => {
@@ -22,6 +26,7 @@ function GlobeComponent() {
 
   return (
     <Globe
+      ref={globeRef}
       width={width}
       height={height}
       globeImageUrl={globeImage}
