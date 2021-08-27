@@ -1,29 +1,27 @@
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import { Center, Box, Heading, Text, Button } from '@chakra-ui/react';
+import { ReactComponent } from 'types';
 
-type ErrorFallbackProps = {
-  canReset: boolean;
-  error: any;
-  resetErrorBoundary: () => void;
-}
+function ErrorFallback({error, resetErrorBoundary}: FallbackProps) {
+  // TODO: send error to me
+  console.error(error.message);
 
-function ErrorFallback({ canReset, error, resetErrorBoundary }: ErrorFallbackProps) {
   return (
-    <div role="alert">
-      There was an error:{' '}
-      <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
-      {canReset ? (
-        <button onClick={resetErrorBoundary}>Try again</button>
-      ) : null}
-    </div>
+    <Center h="100vh" flexDir="column">
+      <Box mb="4rem">
+        <Heading mb="1rem">Something went wrong :(</Heading>
+        <Text>I will let Dany know about this accident, I'm really so sorry</Text>
+      </Box>
+      <Button onClick={resetErrorBoundary}>Try again</Button>
+    </Center>
   );
 }
 
-function WithErrorBoundary(parentProps: any) {
-  const canReset = Boolean(parentProps.onReset || parentProps.resetKeys);
+function WithErrorBoundary({children}: ReactComponent) {
   return (
-    <ErrorBoundary
-      fallbackRender={props => <ErrorFallback canReset={canReset} {...props}
-      {...parentProps} />} />
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      {children}
+    </ErrorBoundary>
   );
 }
 

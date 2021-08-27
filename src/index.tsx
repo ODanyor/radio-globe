@@ -3,34 +3,38 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
+import theme from 'utils/theme';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserProvider } from 'services/browser';
 import { InterfaceProvider } from 'services/interface';
 import { PageProvider } from 'services/page';
 import { ChannelProvider } from 'services/channel';
 import { PlayerProvider } from 'services/player';
+import WithErrorBoundary from 'hocs/ErrorBoundary';
 import App from './App';
 
 const queryClient: QueryClient  = new QueryClient();
 
 ReactDOM.render(
   <React.StrictMode>
-    <ChakraProvider>
-      <BrowserRouter>
-        <BrowserProvider>
-          <QueryClientProvider client={queryClient}>
-            <InterfaceProvider>
-              <PageProvider>
-                <ChannelProvider>
-                  <PlayerProvider>
-                    <App />
-                  </PlayerProvider>
-                </ChannelProvider>
-              </PageProvider>
-            </InterfaceProvider>
-          </QueryClientProvider>
-        </BrowserProvider>
-      </BrowserRouter>
+    <ChakraProvider theme={theme}>
+      <WithErrorBoundary>
+        <BrowserRouter>
+          <BrowserProvider>
+            <QueryClientProvider client={queryClient}>
+              <InterfaceProvider>
+                <PageProvider>
+                  <ChannelProvider>
+                    <PlayerProvider>
+                      <App />
+                    </PlayerProvider>
+                  </ChannelProvider>
+                </PageProvider>
+              </InterfaceProvider>
+            </QueryClientProvider>
+          </BrowserProvider>
+        </BrowserRouter>
+      </WithErrorBoundary>
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root')
