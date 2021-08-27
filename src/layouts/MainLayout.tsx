@@ -1,10 +1,11 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { Navbar, Player } from 'components';
+import { Navbar, Player, NavbarButton } from 'components';
 import { ReactComponent } from 'types';
 
 function MainLayout({ children }: ReactComponent) {
   return (
     <Box>
+      <NavbarButton />
       {children}
       <Flex
         pos="fixed"
