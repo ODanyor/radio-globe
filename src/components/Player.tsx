@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useBrowserContext, setFavorite, unsetFavorite } from 'services/browser';
@@ -46,7 +46,8 @@ import {
   setLoading,
   setVolume,
   setMuted,
-  setVolumeSliderSupported
+  setVolumeSliderSupported,
+  setUrl,
 } from 'services/player';
 import { Channel, ContentItemListen } from 'types';
 
@@ -62,10 +63,10 @@ function Player() {
     volume,
     muted,
     volumeSliderSupported,
+    url,
   }, playerDispatch] = usePlayerContext();
   const [channel, setChannel] = useChannelContext();
   const [page] = usePageContext();
-  const [url, setUrl] = useState('');
   const isFavorited = browser.favorites.some((favorite: string) => favorite === channel.id);
 
   useEffect(() => {
@@ -85,14 +86,14 @@ function Player() {
     const channelId = browser.channelId;
     if (channelId && page.map) {
       const channelContextIndex = findChannelContextIndex(page.content, channelId);
-      getStream(channelId).then(setUrl);
+      getStream(channelId).then((res) => setUrl(playerDispatch, res));
       getChannel(channelId).then((res: Channel) => {
         if (typeof channelContextIndex === 'number')
           setChannel({...res,  context: channelsOnly(page.content[channelContextIndex].items)});
         else setChannel({...res, context: []});
       });
     }
-  }, [browser.channelId, page, setChannel]);
+  }, [browser.channelId, page, setChannel, playerDispatch]);
 
   function getVolumeIcon() {
     if (muted) return <FiVolumeX />;
@@ -100,6 +101,51 @@ function Player() {
     if (volume === 0) return <FiVolume />;
     if (volume < .5) return <FiVolume1 />;
     return <FiVolume2 />;
+  }
+
+  function getResponsiveTitle() {
+    if (!channel.title) return null;
+    if (windowSize.width > 800) return (
+      <Flex
+        w="200px"
+        flexDir="column"
+        cursor="pointer"
+        onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
+        <Heading
+          as="h4"
+          size="md"
+          color="#ffffcd">
+          {channel.title}
+        </Heading>
+        <Text
+          color="white"
+          fontSize="xx-small">
+          {channel.place.title}, {channel.country.title}
+        </Text>
+      </Flex>
+    );
+    return (
+      <Flex
+        pos="fixed"
+        top="1rem"
+        left="1rem"
+        w="200px"
+        flexDir="column"
+        cursor="pointer"
+        onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
+        <Heading
+          as="h4"
+          size="md"
+          color="#ffffcd">
+          {channel.title}
+        </Heading>
+        <Text
+          color="white"
+          fontSize="xx-small">
+          {channel.place.title}, {channel.country.title}
+        </Text>
+      </Flex>
+    );
   }
 
   function getIndexOfCurrentPlaying() {
@@ -149,24 +195,7 @@ function Player() {
 
   return (
     <Center flex="1">
-      {channel.title &&
-      <Flex
-        w="200px"
-        flexDir="column"
-        cursor="pointer"
-        onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
-        <Heading
-          as="h4"
-          size="md"
-          color="#ffffcd">
-          {channel.title}
-        </Heading>
-        <Text
-          color="white"
-          fontSize="xx-small">
-          {channel.place.title}, {channel.country.title}
-        </Text>
-      </Flex>}
+      {getResponsiveTitle()}
 
       <IconButton
         aria-label="lock-toggle"

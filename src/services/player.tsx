@@ -12,6 +12,7 @@ const initialPlayerState: PlayerState = {
   muted: false,
   volume: 0.8,
   volumeSliderSupported: true,
+  url: '',
 };
 
 function playerInitializer(initialPlayerState: PlayerState) {
@@ -37,6 +38,8 @@ function playerReducer(state: PlayerState, action: Action) {
       return { ...state, volume: action.payload };
     case 'SET_VOLUME-SLIDER-SUPPORTED':
       return { ...state, volumeSliderSupported: action.payload };
+    case 'SET_URL':
+      return { ...state, url: action.payload };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
@@ -76,6 +79,9 @@ function setVolume(dispatch: React.Dispatch<Action>, value: number) {
 function setVolumeSliderSupported(dispatch: React.Dispatch<Action>, value: boolean) {
   dispatch({ type: 'SET_VOLUME-SLIDER-SUPPORTED', payload: value })
 }
+function setUrl(dispatch: React.Dispatch<Action>, value: boolean) {
+  dispatch({ type: 'SET_URL', payload: value })
+}
 
 export {
   PlayerProvider,
@@ -86,4 +92,5 @@ export {
   setMuted,
   setVolume,
   setVolumeSliderSupported,
+  setUrl,
 };
