@@ -2,6 +2,7 @@ import Routes from 'App/Routes';
 import { Link as ReachLink } from 'react-router-dom';
 import { Box, Flex, LinkBox, Center, Icon, Text, Spinner } from '@chakra-ui/react';
 import { useInterfaceContext } from 'services/interface';
+import { useWindowSize } from 'hooks/useWindowSize';
 import { FiGlobe, FiHeart, FiSearch } from 'react-icons/fi';
 
 const navbarLinks = [
@@ -28,6 +29,7 @@ function NavbarLink({to, icon, label}: any) {
 }
 
 function Navbar() {
+  const windowSize = useWindowSize();
   const [{navbarIsOpen, loading}] = useInterfaceContext();
 
   function getLinks() {
@@ -36,14 +38,15 @@ function Navbar() {
 
   return (
     <Box
-      position="relative"
+      pos={windowSize.width > 600 ? 'relative' : 'fixed'}
+      bottom="0"
       overflowY="visible"
       transition="all 300ms ease"
       width={`${navbarIsOpen ? 325 : 0}px`}
       left={`${navbarIsOpen ? 0 : 100}%`}>
       <Flex
         position="absolute"
-        w="325px"
+        w={windowSize.width > 600 ? '325px' : '100vw'}
         h="100vh"
         bottom="0"
         overflowY="scroll"
@@ -54,7 +57,10 @@ function Navbar() {
             <Spinner color="white" size="xl" />
           </Center>
         )}
-        <Box flex="1" display={loading && 'none'}>
+        <Box
+          flex="1"
+          display={loading && 'none'}
+          pt="3rem">
           <Routes />
         </Box>
         <Flex
