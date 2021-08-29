@@ -1,8 +1,14 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { MainLayout } from 'layouts';
-import { Globe, AudioVisualizer } from 'components';
+import { AppLoading, Globe, AudioVisualizer } from 'components';
 
-function App(): React.ReactElement {
+function App() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {setTimeout(() => setLoading(false), 2000)}, []);
+
+  if (loading) return <AppLoading />;
+
   return (
     <MainLayout>
       <AudioVisualizer />
