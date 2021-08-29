@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useInterfaceContext, setNavberIsOpen } from 'services/interface';
 import { useBrowserContext, setFavorite, unsetFavorite } from 'services/browser';
 import { useChannelContext } from 'services/channel';
 import { usePageContext } from 'services/page';
@@ -9,6 +8,7 @@ import { channelsOnly, findChannelContextIndex } from 'utils/data';
 import { useAudioPlayer } from 'hooks/useAudioPlayer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useWindowSize } from 'hooks/useWindowSize';
+import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import {
   IMMORTAL_VOLUME,
@@ -24,7 +24,8 @@ import {
   SliderThumb,
   SliderTrack,
   Heading,
-  Text
+  Text,
+  useToast,
 } from '@chakra-ui/react';
 import {
   FiPlay,
@@ -37,7 +38,7 @@ import {
   FiVolume,
   FiVolume1,
   FiVolume2,
-  FiVolumeX
+  FiVolumeX,
 } from 'react-icons/fi';
 import {
   usePlayerContext,
@@ -52,10 +53,11 @@ import {
 import { Channel, ContentItemListen } from 'types';
 
 function Player() {
+  const toast = useToast();
   const history = useHistory();
   const windowSize = useWindowSize();
+  const [, copy] = useCopyToClipboard();
   const [browser, browserDispatch] = useBrowserContext();
-  const [{navbarIsOpen}, interfaceDispatch] = useInterfaceContext();
   const [{
     locked,
     playing,
@@ -105,34 +107,21 @@ function Player() {
 
   function getResponsiveTitle() {
     if (!channel.title) return null;
-    if (windowSize.width > 800) return (
-      <Flex
-        w="200px"
-        flexDir="column"
-        cursor="pointer"
-        onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
-        <Heading
-          as="h4"
-          size="md"
-          color="#ffffcd">
-          {channel.title}
-        </Heading>
-        <Text
-          color="white"
-          fontSize="xx-small">
-          {channel.place.title}, {channel.country.title}
-        </Text>
-      </Flex>
-    );
+
+    const responsiveStyle = windowSize.width < 800 ? {
+      position: 'fixed',
+      top: '1rem',
+      left: '1rem',
+    } : {};
+
     return (
       <Flex
-        pos="fixed"
-        top="1rem"
-        left="1rem"
+        // @ts-ignore
+        style={responsiveStyle}
         w="200px"
         flexDir="column"
         cursor="pointer"
-        onClick={() => setNavberIsOpen(interfaceDispatch, !navbarIsOpen)}>
+        onClick={handleTitleClick}>
         <Heading
           as="h4"
           size="md"
@@ -187,6 +176,19 @@ function Player() {
 
   function handleVolume(value: number) {
     setVolume(playerDispatch, value);
+  }
+
+  function handleTitleClick() {
+    const shareLink = String(window.location.origin).concat(channel.url);
+    copy(shareLink);
+    toast({
+      title: 'Share link copied successfuly.',
+      description: shareLink,
+      status: "success",
+      position: 'bottom-right',
+      duration: 4000,
+      isClosable: true,
+    });
   }
 
   const { onLoadStart, onLoadedData } = useAudioPlayer({src: url, playing, muted, volume});
