@@ -3,7 +3,6 @@ import { Center, Box, Heading, Button } from '@chakra-ui/react';
 import { ReactComponent } from 'types';
 
 function ErrorFallback({error, resetErrorBoundary}: FallbackProps) {
-  // TODO: send error to me
   console.error(error.message);
 
   return (
