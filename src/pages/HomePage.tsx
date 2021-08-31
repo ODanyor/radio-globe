@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { getStored } from 'utils/store';
 import { IMMORTAL_LOCATION } from 'utils/constants';
-import { Heading } from '@chakra-ui/react';
+import { Center, Box, Heading, Text } from '@chakra-ui/react';
 
 function HomePage() {
   const history = useHistory();
@@ -12,7 +12,14 @@ function HomePage() {
     if (cachedLocation) history.push(cachedLocation);
   }, [cachedLocation, history]);
 
-  return <Heading>Home Page</Heading>;
+  return (
+    <Center h="100vh" flexDir="column" color="white">
+      <Box textAlign="center" mb="3rem">
+        <Heading>Welcome to the Radio Globe</Heading>
+        <Text>Made by Doniyor Otamurodov thanks for radio.garden API</Text>
+      </Box>
+    </Center>
+  );
 }
 
 export default HomePage;
