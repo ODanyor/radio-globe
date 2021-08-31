@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
+import { Box } from '@chakra-ui/react';
+import { useUpdateTitle } from 'hooks/useUpdateTitle';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import { findChannelContextIndex, getItemId } from 'utils/data';
 import { useBrowserContext, setChannelId } from 'services/browser';
@@ -8,7 +10,6 @@ import { usePlayerContext } from 'services/player';
 import { usePageContext } from 'services/page';
 import { getAllChannels, getPage } from 'services/service';
 import { Content } from 'components';
-import { Box } from '@chakra-ui/react';
 import { Params, ContentItem, Page } from 'types';
 import { IMMORTAL_LOCATION, METHOD_VISIT, METHOD_LISTEN, ALL_STATIONS } from 'utils/constants';
 
@@ -19,6 +20,7 @@ function ExplorePage() {
   const [page, setPage] = usePageContext();
   const [{locked}] = usePlayerContext();
 
+  useUpdateTitle(String('Radio Globe - ').concat(page.title));
   useKeepStoreUpdatedWith(IMMORTAL_LOCATION, useLocation().pathname);
 
   useEffect(() => {

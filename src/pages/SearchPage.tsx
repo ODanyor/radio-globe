@@ -6,6 +6,7 @@ import { getStored } from 'utils/store';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
 import { IMMORTAL_QUERY } from 'utils/constants';
 import { useDebounce } from 'hooks/useDebounce';
+import { useUpdateTitle } from 'hooks/useUpdateTitle';
 
 function SearchPage() {
   const storedQuery = useMemo<string>(() => getStored(IMMORTAL_QUERY), []);
@@ -13,6 +14,7 @@ function SearchPage() {
   const [result, setResult] = useState([]);
   const debouncedQuery = useDebounce(query);
 
+  useUpdateTitle('Radio Globe - Search');
   useKeepStoreUpdatedWith(IMMORTAL_QUERY, debouncedQuery);
 
   function handleQuery(event: React.ChangeEvent<HTMLInputElement>) {

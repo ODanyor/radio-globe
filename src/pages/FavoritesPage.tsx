@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box, Text } from '@chakra-ui/react';
+import { useUpdateTitle } from 'hooks/useUpdateTitle';
 import { getFavorites } from 'services/service';
 import { useInterfaceContext, setLoading } from 'services/interface';
 import { useBrowserContext } from 'services/browser';
@@ -9,6 +10,8 @@ function FavoritesPage() {
   const [, interfaceDispatch] = useInterfaceContext();
   const [favorites, setFavorites] = useState([]);
   const [{ favorites: storedFavorites }] = useBrowserContext();
+
+  useUpdateTitle('Radio Globe - Favorites');
   
   useEffect(() => {
     if (!storedFavorites) return;
