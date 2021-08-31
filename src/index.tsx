@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
-import theme from 'utils/theme';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserProvider } from 'services/browser';
 import { InterfaceProvider } from 'services/interface';
@@ -17,7 +16,7 @@ const queryClient: QueryClient  = new QueryClient();
 
 ReactDOM.render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
+    <ChakraProvider>
       <WithErrorBoundary>
         <BrowserRouter>
           <BrowserProvider>
