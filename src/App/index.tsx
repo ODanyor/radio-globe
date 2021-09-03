@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MainLayout } from 'layouts';
-import { AppLoading, Globe, AudioVisualizer } from 'components';
+import { AppLoading, Globe } from 'components';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ function App() {
 
   return (
     <MainLayout>
-      <AudioVisualizer />
+      {/* <AudioVisualizer /> */}
       <Globe />
     </MainLayout>
   );

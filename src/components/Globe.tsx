@@ -30,7 +30,7 @@ function GlobeComponent() {
       width={width}
       height={height}
       globeImageUrl={globeImage}
-      backgroundColor="#00000000" // transparent
+      backgroundColor="#000011" // transparent #00000000
       pointsData={places}
       pointLabel='point label'
       pointAltitude={0}
