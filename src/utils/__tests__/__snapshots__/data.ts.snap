@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`utils data: getItemId 1`] = `
+Array [
+  Object {
+    "type": "return",
+    "value": "mockItemId",
+  },
+  Object {
+    "type": "return",
+    "value": "mockItemId",
+  },
+  Object {
+    "type": "return",
+    "value": "mockItemId",
+  },
+]
+`;
