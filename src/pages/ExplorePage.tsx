@@ -3,7 +3,6 @@ import { useParams, useLocation } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import { useUpdateTitle } from 'hooks/useUpdateTitle';
 import { useKeepStoreUpdatedWith } from 'hooks/useKeepStoreUpdatedWith';
-import { findChannelContextIndex, getItemId } from 'utils/data';
 import { useBrowserContext, setChannelId } from 'services/browser';
 import { useInterfaceContext, setLoading } from 'services/interface';
 import { usePlayerContext } from 'services/player';
@@ -11,6 +10,7 @@ import { usePageContext } from 'services/page';
 import { getAllChannels, getPage } from 'services/service';
 import { Content } from 'components';
 import { Params, ContentItem, Page } from 'types';
+import dataUtils from 'utils/data';
 import { IMMORTAL_LOCATION, METHOD_VISIT, METHOD_LISTEN, ALL_STATIONS } from 'utils/constants';
 
 function ExplorePage() {
@@ -36,7 +36,7 @@ function ExplorePage() {
       }
 
       getPage(id).then((res: Page) => {
-        const firstChannelId = getItemId(res.content[0].items[0]);
+        const firstChannelId = dataUtils.getItemId(res.content[0].items[0]);
         if (!locked) setChannelId(browserDispatch, firstChannelId);
         setPage(res);
         setLoading(interfaceDispatch, false);
@@ -48,7 +48,7 @@ function ExplorePage() {
     if (method === METHOD_LISTEN) {
       if (!locked) setChannelId(browserDispatch, id);
       if (page.map && page.subtitle !== ALL_STATIONS) {
-        const channelContextIndex = findChannelContextIndex(page.content, id);
+        const channelContextIndex = dataUtils.findChannelContextIndex(page.content, id);
         if (typeof channelContextIndex === 'number') return;
       }
 

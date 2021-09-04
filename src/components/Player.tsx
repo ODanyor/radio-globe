@@ -4,7 +4,7 @@ import { useBrowserContext, setFavorite, unsetFavorite } from 'services/browser'
 import { useChannelContext } from 'services/channel';
 import { usePageContext } from 'services/page';
 import { getChannel, getStream } from 'services/service';
-import { channelsOnly, findChannelContextIndex } from 'utils/data';
+import dataUtils from 'utils/data';
 import { useAudioPlayer } from 'hooks/useAudioPlayer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useWindowSize } from 'hooks/useWindowSize';
@@ -87,11 +87,11 @@ function Player() {
   useEffect(() => {
     const channelId = browser.channelId;
     if (channelId && page.map) {
-      const channelContextIndex = findChannelContextIndex(page.content, channelId);
+      const channelContextIndex = dataUtils.findChannelContextIndex(page.content, channelId);
       getStream(channelId).then((res) => setUrl(playerDispatch, res));
       getChannel(channelId).then((res: Channel) => {
         if (typeof channelContextIndex === 'number')
-          setChannel({...res,  context: channelsOnly(page.content[channelContextIndex].items)});
+          setChannel({...res,  context: dataUtils.channelsOnly(page.content[channelContextIndex].items)});
         else setChannel({...res, context: []});
       });
     }

@@ -33,9 +33,11 @@ function channelsOnly(items: any[]) {
   return items.filter(item => item.href);
 }
 
-export {
+const dataUtils = {
   instanceOf,
   getItemId,
   findChannelContextIndex,
   channelsOnly
 };
+
+export default dataUtils;

@@ -3,7 +3,7 @@ import { Box, Flex, Heading, Text, Button, IconButton } from '@chakra-ui/react';
 import { FiChevronLeft } from 'react-icons/fi';
 import { useBrowserContext } from 'services/browser';
 import { usePlayerContext, setPlaying } from 'services/player';
-import { getItemId } from 'utils/data';
+import dataUtils from 'utils/data';
 import { ContentItem, Params } from 'types';
 import { FiSquare, FiPlay } from 'react-icons/fi';
 
@@ -26,7 +26,7 @@ function Content({ content }: ContentProps) {
       }
       if (item.url) path = item.url;
 
-      let itemId = item.id || getItemId(item);
+      let itemId = item.id || dataUtils.getItemId(item);
       if (channelId === itemId && url) return (
         <Flex
           key={index}
