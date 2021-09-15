@@ -1,6 +1,6 @@
 // TODO: env varibales
 const stand = process.env.NODE_ENV === 'production' 
-  ? 'api'
+  ? 'https://radio-globe.vercel.app/api'
   : process.env.BASE_URL;
 
 const defaults = {
