@@ -1,3 +1,4 @@
+// TODO: env varibales
 const stand = process.env.NODE_ENV === 'production' 
   ? process.env.BASE_URL
   : 'http://localhost:8000/api';
